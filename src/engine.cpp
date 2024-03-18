@@ -52,6 +52,8 @@ Engine::Engine(const char *path) {
 
   terrain = importPGM(path);
   camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+  windowWidth = DEFAULT_WINDOW_WIDTH;
+  windowHeight = DEFAULT_WINDOW_HEIGHT;
   lastX = DEFAULT_WINDOW_WIDTH / 2.0f;
   lastY = DEFAULT_WINDOW_HEIGHT / 2.0f;
   deltaTime = glfwGetTime();
@@ -67,7 +69,6 @@ Engine::~Engine() {
 
 // Engine main loop
 void Engine::init(void) {
-  int width, height;
   // clang-format off
   float vertices[] = {
       0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
@@ -121,7 +122,6 @@ void Engine::init(void) {
     deltaTime = currentTime - lastTime;
     lastTime = currentTime;
 
-    glfwGetFramebufferSize(window, &width, &height);
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -130,7 +130,7 @@ void Engine::init(void) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
     auto view = camera.getView();
-    auto projection = glm::perspective(glm::radians(camera.fov), (float)width / height, 0.1f, 100.0f);
+    auto projection = glm::perspective(glm::radians(camera.fov), (float)windowWidth / windowHeight, 0.1f, 100.0f);
     auto model = glm::mat4(1.0f);
 
     glUniformMatrix4fv(glGetUniformLocation(program.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
@@ -146,6 +146,8 @@ void Engine::init(void) {
 // Retrive framebuffer reshape events
 void Engine::framebufferSizeCallback(int width, int height) {
   // Scale screen based on framebuffer dimensions
+  windowWidth = width;
+  windowHeight = height;
   glViewport(0, 0, width, height);
 }
 

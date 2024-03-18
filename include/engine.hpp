@@ -32,10 +32,14 @@ class Engine {
 
  private:
   GLFWwindow *window;
+  int windowWidth;
+  int windowHeight;
   Camera camera;
   pgm_t terrain;
-  float deltaTime, lastTime;
-  double lastX, lastY;
+  float deltaTime;
+  float lastTime;
+  double lastX;
+  double lastY;
   bool firstCursor;
 };
 
