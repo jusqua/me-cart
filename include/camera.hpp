@@ -42,12 +42,12 @@ class Camera {
       float pitch = DEFAULT_PITCH);
 
   Camera(
-      float posX = 0.0f,
-      float posY = 0.0f,
-      float posZ = 0.0f,
-      float upX = 0.0f,
-      float upY = 1.0f,
-      float upZ = 0.0f,
+      float posX,
+      float posY,
+      float posZ,
+      float upX,
+      float upY,
+      float upZ,
       float yaw = DEFAULT_YAW,
       float pitch = DEFAULT_PITCH);
 
