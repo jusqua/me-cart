@@ -1,7 +1,7 @@
 #ifndef MECART_UTILS_HPP
 #define MECART_UTILS_HPP
 
-#include <glm/glm.hpp>
+#include <GL/glew.h>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -18,5 +18,6 @@ typedef struct {
 
 std::string importSource(const char *path);
 pgm_t importPGM(const char *path);
+unsigned int importShader(const char *path, GLenum type);
 
 #endif  // !MECART_UTILS_HPP

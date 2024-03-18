@@ -67,3 +67,24 @@ pgm_t importPGM(const char *path) {
 
   return pgm;
 }
+
+unsigned int importShader(const char *path, GLenum type) {
+  int success;
+  char log[512];
+  unsigned int shader;
+  auto source = importSource(path);
+  auto code = source.c_str();
+
+  shader = glCreateShader(type);
+  glShaderSource(shader, 1, &code, NULL);
+  glCompileShader(shader);
+
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+  if (!success) {
+    glGetShaderInfoLog(shader, 512, NULL, log);
+    std::cerr << "ERROR: Failed to compile shader\n"
+              << log << std::endl;
+  }
+
+  return shader;
+}
