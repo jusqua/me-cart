@@ -70,14 +70,14 @@ Engine::~Engine() {
 void Engine::init(void) {
   // clang-format off
   float vertices[] = {
-      0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
-      0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
-      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
-      -0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
-      0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
-      0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
-      -0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
-      -0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f
+      0.5f, -0.5f, 0.5f,
+      0.5f, -0.5f, -0.5f,
+      -0.5f, -0.5f, -0.5f,
+      -0.5f, -0.5f, 0.5f,
+      0.5f, 0.5f, 0.5f,
+      0.5f, 0.5f, -0.5f,
+      -0.5f, 0.5f, -0.5f,
+      -0.5f, 0.5f, 0.5f
   };
 
   unsigned int indices[] = {
@@ -92,7 +92,7 @@ void Engine::init(void) {
     0, 3, 7,
     0, 4, 7,
     1, 2, 6,
-    1, 5, 6,
+    1, 5, 6
   };
   // clang-format on
 
@@ -104,10 +104,8 @@ void Engine::init(void) {
   glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
 
   glGenBuffers(1, &EBO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -130,13 +128,22 @@ void Engine::init(void) {
 
     auto view = camera.getView();
     auto projection = glm::perspective(glm::radians(camera.fov), (float)windowWidth / windowHeight, 0.1f, 100.0f);
-    auto model = glm::mat4(1.0f);
 
     glUniformMatrix4fv(glGetUniformLocation(program.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(program.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(glGetUniformLocation(program.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, 0);
+    auto modelLocation = glGetUniformLocation(program.ID, "model");
+    auto indicesSize = sizeof(indices) / sizeof(unsigned int);
+    for (int i = 0; i < terrain.height; i++) {
+      auto right = glm::translate(glm::mat4(1.0f), glm::vec3(i * 1.0f, 0.0f, 0.0f));
+      for (int j = 0; j < terrain.width; j++) {
+        auto relief = terrain.content[terrain.width * i + j];
+        auto model = glm::translate(right, glm::vec3(0.0f, relief * 1.0f, j * 1.0f));
+        glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+        glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
+      }
+    }
+
     glfwSwapBuffers(window);
     glfwPollEvents();
     processKeyboardEvents();
