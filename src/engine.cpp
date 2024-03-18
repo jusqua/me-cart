@@ -29,6 +29,8 @@ Engine::Engine(const char *path) {
   glfwMakeContextCurrent(window);
   // Hide cursor and attach to center of screen
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  // Set user pointer for callbacks
+  glfwSetWindowUserPointer(window, this);
 
   // Setup OpenGL extensions
   auto glewInitResult = glewInit();
@@ -41,8 +43,18 @@ Engine::Engine(const char *path) {
     exit(EXIT_FAILURE);
   }
 
+  glfwSetFramebufferSizeCallback(window, framebufferSizeCallbackWrapper);
+  glfwSetCursorPosCallback(window, cursorPosCallbackWrapper);
+  glfwSetScrollCallback(window, scrollCallbackWrapper);
+  glfwSetKeyCallback(window, keyCallbackWrapper);
+
   terrain = importPGM(path);
   camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+  lastX = DEFAULT_WINDOW_WIDTH / 2.0f;
+  lastY = DEFAULT_WINDOW_HEIGHT / 2.0f;
+  deltaTime = glfwGetTime();
+  lastTime = glfwGetTime();
+  firstCursor = true;
 }
 
 // Engine destructor
@@ -52,30 +64,58 @@ Engine::~Engine() {
 }
 
 // Engine main loop
-void Engine::start(void) {
+void Engine::init(void) {
   while (!glfwWindowShouldClose(window)) {
-    pollEvents();
+    glfwPollEvents();
   }
 }
 
-// Retrive every event
-void Engine::pollEvents(void) {
-  pollKeyboardEvents();
-  pollFramebufferEvents();
-  glfwPollEvents();
-}
-
 // Retrive framebuffer reshape events
-void Engine::pollFramebufferEvents(void) {
-  int width, height;
+void Engine::framebufferSizeCallback(int width, int height) {
   // Scale screen based on framebuffer dimensions
-  glfwGetFramebufferSize(window, &width, &height);
   glViewport(0, 0, width, height);
 }
 
+// Retrive mouse cursor events
+void Engine::cursorPosCallback(double xpos, double ypos) {
+  if (firstCursor) {
+    lastX = xpos;
+    lastY = ypos;
+    firstCursor = false;
+  }
+
+  float xoffset = (xpos - lastX);
+  float yoffset = (lastY - ypos);
+
+  camera.processCursorEvents(xoffset, yoffset);
+}
+
+// Retrive mouse scroll events
+void Engine::scrollCallback(double xoffset, double yoffset) {
+  camera.processScrollEvents(yoffset);
+}
+
 // Retrive keyboard activation events
-void Engine::pollKeyboardEvents(void) {
+void Engine::keyCallback(int key, int scancode, int action, int mods) {
   // Press Escape to quit
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
+}
+
+// Wrappers
+void framebufferSizeCallbackWrapper(GLFWwindow *window, int width, int height) {
+  auto engine = (Engine *)glfwGetWindowUserPointer(window);
+  engine->framebufferSizeCallback(width, height);
+}
+void cursorPosCallbackWrapper(GLFWwindow *window, double xpos, double ypos) {
+  auto engine = (Engine *)glfwGetWindowUserPointer(window);
+  engine->cursorPosCallback(xpos, ypos);
+}
+void scrollCallbackWrapper(GLFWwindow *window, double xoffset, double yoffset) {
+  auto engine = (Engine *)glfwGetWindowUserPointer(window);
+  engine->scrollCallback(xoffset, yoffset);
+}
+void keyCallbackWrapper(GLFWwindow *window, int key, int scancode, int action, int mods) {
+  auto engine = (Engine *)glfwGetWindowUserPointer(window);
+  engine->keyCallback(key, scancode, action, mods);
 }
