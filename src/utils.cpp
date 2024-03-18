@@ -1,5 +1,6 @@
 #include <utils.hpp>
 
+// Import source file from path
 std::string importSource(const char *path) {
   std::string source;
   std::ifstream file;
@@ -26,6 +27,7 @@ std::string importSource(const char *path) {
   return source;
 }
 
+// Import PGM from path
 pgm_t importPGM(const char *path) {
   auto source = importSource(path);
   std::istringstream ssource(source), sline;
@@ -68,17 +70,21 @@ pgm_t importPGM(const char *path) {
   return pgm;
 }
 
+// Import shaders from path
 unsigned int importShader(const char *path, GLenum type) {
   int success;
   char log[512];
   unsigned int shader;
+  // Import source
   auto source = importSource(path);
   auto code = source.c_str();
 
+  // Create shader and compile
   shader = glCreateShader(type);
   glShaderSource(shader, 1, &code, NULL);
   glCompileShader(shader);
 
+  // Check for compile errors
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(shader, 512, NULL, log);

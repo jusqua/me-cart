@@ -18,6 +18,7 @@ Engine::Engine(const char *path) {
                             glfwGetPrimaryMonitor(),
                             NULL);
 
+  // Check for window initialization errors
   if (window == NULL) {
     std::cerr << "ERROR: Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -31,6 +32,8 @@ Engine::Engine(const char *path) {
 
   // Setup OpenGL extensions
   auto glewInitResult = glewInit();
+
+  // Check for importing errors
   if (glewInitResult != GLEW_OK) {
     std::cerr << "ERROR: " << glewGetErrorString(glewInitResult) << std::endl;
     glfwDestroyWindow(window);
@@ -65,12 +68,14 @@ void Engine::pollEvents(void) {
 // Retrive framebuffer reshape events
 void Engine::pollFramebufferEvents(void) {
   int width, height;
+  // Scale screen based on framebuffer dimensions
   glfwGetFramebufferSize(window, &width, &height);
   glViewport(0, 0, width, height);
 }
 
 // Retrive keyboard activation events
 void Engine::pollKeyboardEvents(void) {
+  // Press Escape to quit
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
 }

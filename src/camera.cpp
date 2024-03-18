@@ -1,5 +1,6 @@
 #include <camera.hpp>
 
+// Camera constructor with vectors
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) {
   this->position = position;
   this->worldUp = up;
@@ -12,6 +13,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) {
   updateVectors();
 }
 
+// Camera constructor with scalars
 Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) {
   this->position = glm::vec3(posX, posY, posZ);
   this->worldUp = glm::vec3(upX, upY, upZ);
@@ -24,10 +26,12 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
   updateVectors();
 }
 
+// Return camera lookAt matrix
 glm::mat4 Camera::getView(void) {
   return glm::lookAt(position, position + front, up);
 }
 
+// Process events from keyboard
 void Camera::processKeyboardEvents(CAMERA_MOVEMENT type, float deltaTime) {
   const float velocity = movementSpeed * deltaTime;
   switch (type) {
@@ -46,6 +50,7 @@ void Camera::processKeyboardEvents(CAMERA_MOVEMENT type, float deltaTime) {
   }
 }
 
+// Process events from mouse cursor
 void Camera::processCursorEvents(float xoffset, float yoffset, bool constrainPitch) {
   xoffset *= cursorSensitivity;
   yoffset *= cursorSensitivity;
@@ -63,6 +68,7 @@ void Camera::processCursorEvents(float xoffset, float yoffset, bool constrainPit
   updateVectors();
 }
 
+// Process events from mouse scroll
 void Camera::processScrollEvents(float yoffset) {
   fov -= yoffset;
   if (fov > MAX_FOV)
@@ -71,6 +77,7 @@ void Camera::processScrollEvents(float yoffset) {
     fov = MIN_FOV;
 }
 
+// Update camera main vectors
 void Camera::updateVectors(void) {
   glm::vec3 front;
   front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
