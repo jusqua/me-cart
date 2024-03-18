@@ -17,7 +17,6 @@ const static char *DEFAULT_TERRAIN_PATH = "resources/terrain/default.pgm";
 void framebufferSizeCallbackWrapper(GLFWwindow *window, int width, int height);
 void cursorPosCallbackWrapper(GLFWwindow *window, double xpos, double ypos);
 void scrollCallbackWrapper(GLFWwindow *window, double xoffset, double yoffset);
-void keyCallbackWrapper(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 class Engine {
  public:
@@ -28,7 +27,7 @@ class Engine {
   void framebufferSizeCallback(int width, int height);
   void cursorPosCallback(double xpos, double ypos);
   void scrollCallback(double xoffset, double yoffset);
-  void keyCallback(int key, int scancode, int action, int mods);
+  void processKeyboardEvents(void);
 
  private:
   GLFWwindow *window;

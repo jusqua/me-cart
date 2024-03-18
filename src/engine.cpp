@@ -48,7 +48,6 @@ Engine::Engine(const char *path) {
   glfwSetFramebufferSizeCallback(window, framebufferSizeCallbackWrapper);
   glfwSetCursorPosCallback(window, cursorPosCallbackWrapper);
   glfwSetScrollCallback(window, scrollCallbackWrapper);
-  glfwSetKeyCallback(window, keyCallbackWrapper);
 
   terrain = importPGM(path);
   camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -140,6 +139,7 @@ void Engine::init(void) {
     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, 0);
     glfwSwapBuffers(window);
     glfwPollEvents();
+    processKeyboardEvents();
   }
 }
 
@@ -171,9 +171,9 @@ void Engine::scrollCallback(double xoffset, double yoffset) {
 }
 
 // Retrive keyboard activation events
-void Engine::keyCallback(int key, int scancode, int action, int mods) {
+void Engine::processKeyboardEvents(void) {
   // Press Escape to quit
-  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
   // Process camera movement
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -198,8 +198,4 @@ void cursorPosCallbackWrapper(GLFWwindow *window, double xpos, double ypos) {
 void scrollCallbackWrapper(GLFWwindow *window, double xoffset, double yoffset) {
   auto engine = (Engine *)glfwGetWindowUserPointer(window);
   engine->scrollCallback(xoffset, yoffset);
-}
-void keyCallbackWrapper(GLFWwindow *window, int key, int scancode, int action, int mods) {
-  auto engine = (Engine *)glfwGetWindowUserPointer(window);
-  engine->keyCallback(key, scancode, action, mods);
 }
