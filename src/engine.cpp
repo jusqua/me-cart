@@ -1,7 +1,7 @@
 #include <engine.hpp>
 
 // Engine constructor
-Engine::Engine() {
+Engine::Engine(const char *path) {
   // Initialize GLFW
   if (!glfwInit()) exit(EXIT_FAILURE);
 
@@ -37,6 +37,8 @@ Engine::Engine() {
     glfwTerminate();
     exit(EXIT_FAILURE);
   }
+
+  terrain = importPGM(path);
 }
 
 // Engine destructor
