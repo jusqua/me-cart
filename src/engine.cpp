@@ -31,6 +31,8 @@ Engine::Engine(const char *path) {
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   // Set user pointer for callbacks
   glfwSetWindowUserPointer(window, this);
+  // Enable depth simulation
+  glEnable(GL_DEPTH_TEST);
 
   // Setup OpenGL extensions
   auto glewInitResult = glewInit();
@@ -65,7 +67,78 @@ Engine::~Engine() {
 
 // Engine main loop
 void Engine::init(void) {
+  int width, height;
+  // clang-format off
+  float vertices[] = {
+      0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
+      0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
+      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
+      -0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
+      0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
+      0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
+      -0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
+      -0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f
+  };
+
+  unsigned int indices[] = {
+    0, 1, 2,
+    0, 3, 2,
+    4, 5, 6,
+    4, 7, 6,
+    0, 1, 5,
+    0, 4, 5,
+    3, 2, 6,
+    3, 7, 6,
+    0, 3, 7,
+    0, 4, 7,
+    1, 2, 6,
+    1, 5, 6,
+  };
+  // clang-format on
+
+  unsigned int VAO, VBO, EBO;
+
+  glGenVertexArrays(1, &VAO);
+  glBindVertexArray(VAO);
+
+  glGenBuffers(1, &VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+
+  glGenBuffers(1, &EBO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+  Shader program("resources/shaders/default.vert",
+                 "resources/shaders/default.frag");
+
   while (!glfwWindowShouldClose(window)) {
+    auto currentTime = glfwGetTime();
+    deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+
+    glfwGetFramebufferSize(window, &width, &height);
+    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    program.activate();
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+    auto view = camera.getView();
+    auto projection = glm::perspective(glm::radians(camera.fov), (float)width / height, 0.1f, 100.0f);
+    auto model = glm::mat4(1.0f);
+
+    glUniformMatrix4fv(glGetUniformLocation(program.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(glGetUniformLocation(program.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(glGetUniformLocation(program.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, 0);
+    glfwSwapBuffers(window);
     glfwPollEvents();
   }
 }
@@ -100,6 +173,15 @@ void Engine::keyCallback(int key, int scancode, int action, int mods) {
   // Press Escape to quit
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
+  // Process camera movement
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    camera.processKeyboardEvents(CAMERA_MOVEMENT::FORWARD, deltaTime);
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    camera.processKeyboardEvents(CAMERA_MOVEMENT::BACKWARD, deltaTime);
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    camera.processKeyboardEvents(CAMERA_MOVEMENT::LEFT, deltaTime);
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    camera.processKeyboardEvents(CAMERA_MOVEMENT::RIGHT, deltaTime);
 }
 
 // Wrappers
