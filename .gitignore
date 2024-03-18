@@ -1,0 +1,8 @@
+# Ignore files result files
+*.o
+*.out
+me-cart
+# Ignore temp files
+~*
+# Ignore VSCode user config
+.vscode

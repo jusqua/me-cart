@@ -1,0 +1,10 @@
+﻿---
+BasedOnStyle: Google
+IndentWidth: '2'
+Language: Cpp
+PointerAlignment: Right
+SortIncludes: 'false'
+UseTab: Never
+ColumnLimit: 0
+
+...
