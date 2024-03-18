@@ -39,6 +39,7 @@ Engine::Engine(const char *path) {
   }
 
   terrain = importPGM(path);
+  camera = Camera(0.0f, 0.0f, 3.0f);
 }
 
 // Engine destructor

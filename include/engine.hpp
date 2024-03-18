@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <utils.hpp>
+#include <camera.hpp>
 
 const static int DEFAULT_WINDOW_WIDTH = 1200, DEFAULT_WINDOW_HEIGHT = 800;
 const static char *DEFAULT_WINDOW_PREFIX = "Me, Cart";
@@ -19,6 +20,7 @@ class Engine {
 
  private:
   GLFWwindow *window;
+  Camera camera;
   pgm_t terrain;
 
   void importTerrain(void);
