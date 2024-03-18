@@ -12,8 +12,8 @@
 typedef struct {
   int width, height;
   std::string description;
-  unsigned char max;
-  std::vector<unsigned char> content;
+  int max;
+  std::vector<int> content;
 } pgm_t;
 
 std::string importSource(const char *path);

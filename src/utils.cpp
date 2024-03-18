@@ -57,7 +57,7 @@ pgm_t importPGM(const char *path) {
   std::istringstream(line) >> pgm.max;
 
   // Get content
-  pgm.content = std::vector<unsigned char>(pgm.width * pgm.height);
+  pgm.content = std::vector<int>(pgm.width * pgm.height);
   for (size_t i = 0; i < pgm.height; i++) {
     std::getline(ssource, line);
     sline = std::istringstream(line);
