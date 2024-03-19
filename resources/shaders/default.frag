@@ -1,8 +1,11 @@
 #version 330
-in vec4 ex_Color;
 out vec4 out_Color;
 
+uniform vec3 light_Color;
+uniform vec3 solid_Color;
+uniform float ambient_Strength;
+
 void main(void) {
-  out_Color = vec4(0.6f, 0.3f, 0.0f, 1.0f);
+  out_Color = vec4(ambient_Strength * light_Color * solid_Color, 1.0f);
 }
 
