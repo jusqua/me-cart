@@ -50,7 +50,7 @@ Engine::Engine(const char *path) {
   glfwSetScrollCallback(window, scrollCallbackWrapper);
 
   terrain = importPGM(path);
-  camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+  camera = Camera(glm::vec3(3.0f, 7.0f, 3.0f));
   windowWidth = DEFAULT_WINDOW_WIDTH;
   windowHeight = DEFAULT_WINDOW_HEIGHT;
   lastX = DEFAULT_WINDOW_WIDTH / 2.0f;
@@ -70,29 +70,47 @@ Engine::~Engine() {
 void Engine::init(void) {
   // clang-format off
   float vertices[] = {
-      0.5f, -0.5f, 0.5f,
-      0.5f, -0.5f, -0.5f,
-      -0.5f, -0.5f, -0.5f,
-      -0.5f, -0.5f, 0.5f,
-      0.5f, 0.5f, 0.5f,
-      0.5f, 0.5f, -0.5f,
-      -0.5f, 0.5f, -0.5f,
-      -0.5f, 0.5f, 0.5f
-  };
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-  unsigned int indices[] = {
-    0, 1, 2,
-    0, 3, 2,
-    4, 5, 6,
-    4, 7, 6,
-    0, 1, 5,
-    0, 4, 5,
-    3, 2, 6,
-    3, 7, 6,
-    0, 3, 7,
-    0, 4, 7,
-    1, 2, 6,
-    1, 5, 6
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
   };
   // clang-format on
 
@@ -102,22 +120,18 @@ void Engine::init(void) {
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  glGenBuffers(1, &EBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
   glGenVertexArrays(1, &lightSourceVAO);
   glBindVertexArray(lightSourceVAO);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
 
   glGenVertexArrays(1, &terrainVAO);
   glBindVertexArray(terrainVAO);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
   glEnableVertexAttribArray(0);
 
   Shader lightProgram("resources/shaders/light.vert",
@@ -142,7 +156,6 @@ void Engine::init(void) {
     terrainProgram.activate();
     glBindVertexArray(terrainVAO);
 
-    glUniform1f(glGetUniformLocation(terrainProgram.ID, "ambient_Strength"), 0.1f);
     glUniform3fv(glGetUniformLocation(terrainProgram.ID, "light_Color"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
     glUniform3fv(glGetUniformLocation(terrainProgram.ID, "solid_Color"), 1, glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f)));
 
@@ -150,14 +163,13 @@ void Engine::init(void) {
     glUniformMatrix4fv(glGetUniformLocation(terrainProgram.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
     auto modelLocation = glGetUniformLocation(terrainProgram.ID, "model");
-    auto indicesSize = sizeof(indices) / sizeof(unsigned int);
     for (int i = 0; i < terrain.height; i++) {
       auto right = glm::translate(glm::mat4(1.0f), glm::vec3(i * 1.0f, 0.0f, 0.0f));
       for (int j = 0; j < terrain.width; j++) {
         auto relief = terrain.content[terrain.width * i + j];
         auto model = glm::translate(right, glm::vec3(0.0f, relief * 1.0f, j * 1.0f));
         glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-        glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
       }
     }
 
@@ -168,7 +180,7 @@ void Engine::init(void) {
     glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
