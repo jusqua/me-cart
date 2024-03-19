@@ -114,7 +114,7 @@ void Engine::init(void) {
   };
   // clang-format on
 
-  unsigned int lightSourceVAO, terrainVAO, VBO, EBO;
+  unsigned int lightSourceVAO, terrainVAO, VBO;
 
   glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -124,21 +124,23 @@ void Engine::init(void) {
   glBindVertexArray(lightSourceVAO);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
 
   glGenVertexArrays(1, &terrainVAO);
   glBindVertexArray(terrainVAO);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
 
   Shader lightProgram("resources/shaders/light.vert",
                       "resources/shaders/light.frag");
 
   Shader terrainProgram("resources/shaders/default.vert",
                         "resources/shaders/default.frag");
+
+  auto lightPosition = glm::vec3(0.0f, 300.0f, 0.0f);
 
   while (!glfwWindowShouldClose(window)) {
     auto currentTime = glfwGetTime();
@@ -151,13 +153,12 @@ void Engine::init(void) {
     auto view = camera.getView();
     auto projection = glm::perspective(glm::radians(camera.fov), (float)windowWidth / windowHeight, 0.1f, 330.0f);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
     terrainProgram.activate();
     glBindVertexArray(terrainVAO);
 
+    glUniform3fv(glGetUniformLocation(terrainProgram.ID, "light_Position"), 1, glm::value_ptr(lightPosition));
     glUniform3fv(glGetUniformLocation(terrainProgram.ID, "light_Color"), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
-    glUniform3fv(glGetUniformLocation(terrainProgram.ID, "solid_Color"), 1, glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f)));
+    glUniform3fv(glGetUniformLocation(terrainProgram.ID, "object_Color"), 1, glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f)));
 
     glUniformMatrix4fv(glGetUniformLocation(terrainProgram.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(terrainProgram.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -175,7 +176,7 @@ void Engine::init(void) {
 
     lightProgram.activate();
     glBindVertexArray(lightSourceVAO);
-    auto model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 300.0f, 0.0f));
+    auto model = glm::translate(glm::mat4(1.0f), lightPosition);
     model = glm::scale(model, glm::vec3(20.0f, 20.0f, 20.0f));
     glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
