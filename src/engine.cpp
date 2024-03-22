@@ -48,7 +48,7 @@ Engine::Engine(pgm_t _terrain) {
   glfwSetScrollCallback(window, scrollCallbackWrapper);
 
   terrain = _terrain;
-  camera = Camera(glm::vec3(3.0f, 7.0f, 3.0f));
+  camera = Camera(glm::vec3(0.0f, terrain.content[terrain.height / 2 + terrain.width / 2], 0.0f));
   windowWidth = DEFAULT_WINDOW_WIDTH;
   windowHeight = DEFAULT_WINDOW_HEIGHT;
   lastX = DEFAULT_WINDOW_WIDTH / 2.0f;
@@ -169,10 +169,11 @@ void Engine::init(void) {
 
     auto modelLocation = glGetUniformLocation(terrainProgram.ID, "model");
     for (int i = 0; i < terrain.height; i++) {
-      auto right = glm::translate(glm::mat4(1.0f), glm::vec3(i * 1.0f, 0.0f, 0.0f));
+      auto start = glm::translate(glm::mat4(1.0f),
+                                  glm::vec3(-terrain.height / 2.0f + i, 0.0f, -terrain.width / 2.0f));
       for (int j = 0; j < terrain.width; j++) {
         auto relief = terrain.content[terrain.width * i + j];
-        auto model = glm::translate(right, glm::vec3(0.0f, relief * 1.0f, j * 1.0f));
+        auto model = glm::translate(start, glm::vec3(0.0f, relief * 1.0f, j * 1.0f));
         glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
         glDrawArrays(GL_TRIANGLES, 0, 36);
       }

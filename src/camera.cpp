@@ -79,12 +79,12 @@ void Camera::processScrollEvents(float yoffset) {
 
 // Update camera main vectors
 void Camera::updateVectors(void) {
-  glm::vec3 newFront;
-  newFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-  newFront.y = sin(glm::radians(pitch));
-  newFront.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+  glm::vec3 _front;
+  _front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+  _front.y = sin(glm::radians(pitch));
+  _front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
-  front = glm::normalize(newFront);
+  front = glm::normalize(_front);
   right = glm::normalize(glm::cross(front, worldUp));
   up = glm::normalize(glm::cross(right, front));
 }
