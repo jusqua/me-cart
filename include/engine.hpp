@@ -9,6 +9,9 @@
 #include <utils.hpp>
 #include <camera.hpp>
 #include <shader.hpp>
+#include <ebo.hpp>
+#include <vbo.hpp>
+#include <vao.hpp>
 
 const static int DEFAULT_WINDOW_WIDTH = 1200, DEFAULT_WINDOW_HEIGHT = 800;
 const static char *DEFAULT_WINDOW_PREFIX = "Me, Cart";

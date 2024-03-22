@@ -112,31 +112,17 @@ void Engine::init(void) {
   };
   // clang-format on
 
-  unsigned int lightSourceVAO, terrainVAO, VBO;
+  auto objectVBO = VBO(vertices, sizeof(vertices));
 
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  auto terrainVAO = VAO();
+  terrainVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), 0);
+  terrainVAO.linkAttrib(objectVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void *)(3 * sizeof(float)));
 
-  glGenVertexArrays(1, &lightSourceVAO);
-  glBindVertexArray(lightSourceVAO);
+  auto lightVAO = VAO();
+  lightVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), 0);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-  glEnableVertexAttribArray(0);
-
-  glGenVertexArrays(1, &terrainVAO);
-  glBindVertexArray(terrainVAO);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  Shader lightProgram("resources/shaders/light.vert",
-                      "resources/shaders/light.frag");
-
-  Shader terrainProgram("resources/shaders/default.vert",
-                        "resources/shaders/default.frag");
+  Shader lightProgram("resources/shaders/light.vert", "resources/shaders/light.frag");
+  Shader terrainProgram("resources/shaders/default.vert", "resources/shaders/default.frag");
 
   while (!glfwWindowShouldClose(window)) {
     auto currentTime = glfwGetTime();
@@ -150,7 +136,7 @@ void Engine::init(void) {
     auto projection = glm::perspective(glm::radians(camera.fov), (float)windowWidth / windowHeight, 0.1f, 800.0f);
 
     terrainProgram.activate();
-    glBindVertexArray(terrainVAO);
+    terrainVAO.bind();
 
     glUniform3fv(glGetUniformLocation(terrainProgram.ID, "camera_Position"), 1, glm::value_ptr(camera.position));
 
@@ -180,7 +166,7 @@ void Engine::init(void) {
     }
 
     lightProgram.activate();
-    glBindVertexArray(lightSourceVAO);
+    lightVAO.bind();
     auto model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 500.0f, 0.0f));
     model = glm::scale(model, glm::vec3(50.0f));
     glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
