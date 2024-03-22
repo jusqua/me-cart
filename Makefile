@@ -1,11 +1,18 @@
-TARGET=me-cart
-CXX=clang++
-SOURCEDIR=./src/
-LDFLAGS=-lGL -lGLU -lGLEW -lglfw -I./include/
-SOURCES=$(shell find $(SOURCEDIR) -name '*.cpp')
+SRCDIR = src
+SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 
-build:
-	@$(CXX) $(SOURCES) $(LDFLAGS) -o $(TARGET)
+OBJDIR = obj
+OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
 
-run: build
-	@./$(TARGET)
+TARGET = me-cart
+CFLAGS = -lGL -lGLU -lGLEW -lglfw -I./include
+
+$(TARGET): $(OBJECTS)
+	@$(CXX) $(CFLAGS) $(OBJECTS) -o $(TARGET)
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	@mkdir -p $(OBJDIR)
+	@$(CC) -c $(CFLAGS) $< -o $@
+
+clean:
+	@$(RM) -rfv $(OBJDIR)

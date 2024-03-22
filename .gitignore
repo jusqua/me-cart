@@ -1,4 +1,5 @@
 # Ignore files result files
+obj/
 *.o
 *.out
 me-cart
