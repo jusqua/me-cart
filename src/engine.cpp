@@ -147,7 +147,7 @@ void Engine::init(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     auto view = camera.getView();
-    auto projection = glm::perspective(glm::radians(camera.fov), (float)windowWidth / windowHeight, 0.1f, 330.0f);
+    auto projection = glm::perspective(glm::radians(camera.fov), (float)windowWidth / windowHeight, 0.1f, 800.0f);
 
     terrainProgram.activate();
     glBindVertexArray(terrainVAO);
@@ -181,8 +181,8 @@ void Engine::init(void) {
 
     lightProgram.activate();
     glBindVertexArray(lightSourceVAO);
-    auto model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 330.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(25.0f));
+    auto model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 500.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(50.0f));
     glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
