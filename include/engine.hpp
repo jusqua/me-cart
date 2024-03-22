@@ -20,7 +20,7 @@ void scrollCallbackWrapper(GLFWwindow *window, double xoffset, double yoffset);
 
 class Engine {
  public:
-  Engine(const char *path = DEFAULT_TERRAIN_PATH);
+  Engine(pgm_t _terrain);
   ~Engine();
 
   void init();

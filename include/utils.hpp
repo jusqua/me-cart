@@ -9,6 +9,9 @@
 #include <vector>
 #include <cstring>
 
+const static std::string ERROR_PREFIX = "ERROR: ";
+const static std::string USAGE_PREFIX = "USAGE: ";
+
 typedef struct {
   int width, height;
   std::string description;

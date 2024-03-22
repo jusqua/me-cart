@@ -1,7 +1,7 @@
 #include <engine.hpp>
 
 // Engine constructor
-Engine::Engine(const char *path) {
+Engine::Engine(pgm_t _terrain) {
   // Initialize GLFW
   if (!glfwInit()) exit(EXIT_FAILURE);
 
@@ -20,9 +20,8 @@ Engine::Engine(const char *path) {
 
   // Check for window initialization errors
   if (window == NULL) {
-    std::cerr << "ERROR: Failed to create GLFW window" << std::endl;
     glfwTerminate();
-    exit(EXIT_FAILURE);
+    throw std::runtime_error(ERROR_PREFIX + "Failed to create GLFW window");
   }
 
   // Attach window to context
@@ -39,17 +38,16 @@ Engine::Engine(const char *path) {
 
   // Check for importing errors
   if (glewInitResult != GLEW_OK) {
-    std::cerr << "ERROR: " << glewGetErrorString(glewInitResult) << std::endl;
     glfwDestroyWindow(window);
     glfwTerminate();
-    exit(EXIT_FAILURE);
+    throw std::runtime_error(ERROR_PREFIX + "Failed to import GLEW extensions");
   }
 
   glfwSetFramebufferSizeCallback(window, framebufferSizeCallbackWrapper);
   glfwSetCursorPosCallback(window, cursorPosCallbackWrapper);
   glfwSetScrollCallback(window, scrollCallbackWrapper);
 
-  terrain = importPGM(path);
+  terrain = _terrain;
   camera = Camera(glm::vec3(3.0f, 7.0f, 3.0f));
   windowWidth = DEFAULT_WINDOW_WIDTH;
   windowHeight = DEFAULT_WINDOW_HEIGHT;

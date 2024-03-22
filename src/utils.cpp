@@ -18,10 +18,8 @@ std::string importSource(const char *path) {
     file.close();
     // Attach string from string
     source = stream.str();
-
-  } catch (std::ifstream::failure &e) {
-    std::cerr << "ERROR: Failed to source path (" << path << ")\n"
-              << e.what() << std::endl;
+  } catch (const std::ifstream::failure &_) {
+    throw std::runtime_error(ERROR_PREFIX + "File not found or failed to load from source");
   }
 
   return source;
@@ -37,7 +35,7 @@ pgm_t importPGM(const char *path) {
   // Get file type
   std::getline(ssource, line);
   if (line.compare("P2")) {
-    std::cerr << "ERROR: File format not supported" << std::endl;
+    throw std::runtime_error(ERROR_PREFIX + "File does not match PGM format");
   }
 
   // Ignore file description
@@ -88,8 +86,7 @@ unsigned int importShader(const char *path, GLenum type) {
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(shader, 512, NULL, log);
-    std::cerr << "ERROR: Failed to compile shader\n"
-              << log << std::endl;
+    throw std::runtime_error(ERROR_PREFIX + log);
   }
 
   return shader;
