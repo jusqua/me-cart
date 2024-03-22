@@ -11,6 +11,7 @@
 
 const static std::string ERROR_PREFIX = "ERROR: ";
 const static std::string USAGE_PREFIX = "USAGE: ";
+const static char *DEFAULT_TERRAIN_PATH = "resources/terrain/default.pgm";
 
 typedef struct {
   int width, height;
