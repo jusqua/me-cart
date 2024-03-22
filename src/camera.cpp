@@ -10,7 +10,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) {
   this->movementSpeed = DEFAULT_SPEED;
   this->cursorSensitivity = DEFAULT_SENSITIVITY;
   this->fov = DEFAULT_FOV;
-  updateVectors();
+  this->updateVectors();
 }
 
 // Camera constructor with scalars
@@ -23,68 +23,68 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
   this->movementSpeed = DEFAULT_SPEED;
   this->cursorSensitivity = DEFAULT_SENSITIVITY;
   this->fov = DEFAULT_FOV;
-  updateVectors();
+  this->updateVectors();
 }
 
 // Return camera lookAt matrix
 glm::mat4 Camera::getView(void) {
-  return glm::lookAt(position, position + front, up);
+  return glm::lookAt(this->position, this->position + this->front, this->up);
 }
 
 // Process events from keyboard
 void Camera::processKeyboardEvents(CAMERA_MOVEMENT type, float deltaTime) {
-  const float velocity = movementSpeed * deltaTime;
+  const float velocity = this->movementSpeed * deltaTime;
   switch (type) {
     case FORWARD:
-      position += front * velocity;
+      this->position += this->front * velocity;
       break;
     case BACKWARD:
-      position -= front * velocity;
+      this->position -= this->front * velocity;
       break;
     case LEFT:
-      position -= right * velocity;
+      this->position -= this->right * velocity;
       break;
     case RIGHT:
-      position += right * velocity;
+      this->position += this->right * velocity;
       break;
   }
 }
 
 // Process events from mouse cursor
 void Camera::processCursorEvents(float xoffset, float yoffset, bool constrainPitch) {
-  xoffset *= cursorSensitivity;
-  yoffset *= cursorSensitivity;
+  xoffset *= this->cursorSensitivity;
+  yoffset *= this->cursorSensitivity;
 
-  yaw = xoffset;
-  pitch = yoffset;
+  this->yaw = xoffset;
+  this->pitch = yoffset;
 
   if (constrainPitch) {
-    if (pitch > 89.0f)
-      pitch = 89.0f;
-    if (pitch < -89.0f)
-      pitch = -89.0f;
+    if (this->pitch > 89.0f)
+      this->pitch = 89.0f;
+    if (this->pitch < -89.0f)
+      this->pitch = -89.0f;
   }
 
-  updateVectors();
+  this->updateVectors();
 }
 
 // Process events from mouse scroll
 void Camera::processScrollEvents(float yoffset) {
-  fov -= yoffset;
-  if (fov > MAX_FOV)
-    fov = MAX_FOV;
-  if (fov < MIN_FOV)
-    fov = MIN_FOV;
+  this->fov -= yoffset;
+  if (this->fov > MAX_FOV)
+    this->fov = MAX_FOV;
+  if (this->fov < MIN_FOV)
+    this->fov = MIN_FOV;
 }
 
 // Update camera main vectors
 void Camera::updateVectors(void) {
-  glm::vec3 _front;
-  _front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-  _front.y = sin(glm::radians(pitch));
-  _front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+  glm::vec3 front;
+  front.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
+  front.y = sin(glm::radians(this->pitch));
+  front.z = sin(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
 
-  front = glm::normalize(_front);
-  right = glm::normalize(glm::cross(front, worldUp));
-  up = glm::normalize(glm::cross(right, front));
+  this->front = glm::normalize(front);
+  this->right = glm::normalize(glm::cross(this->front, this->worldUp));
+  this->up = glm::normalize(glm::cross(this->right, this->front));
 }

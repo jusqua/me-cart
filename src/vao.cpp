@@ -5,7 +5,7 @@ VAO::VAO(void) {
 }
 
 VAO::~VAO(void) {
-  destroy();
+  this->destroy();
 }
 
 void VAO::linkAttrib(VBO &buffer, GLuint layout, GLuint components, GLenum type, GLsizeiptr stride, void *offset) {

@@ -8,7 +8,7 @@ EBO::EBO(GLfloat *indices, GLsizeiptr size) {
 }
 
 EBO::~EBO(void) {
-  destroy();
+  this->destroy();
 }
 
 void EBO::bind(void) {

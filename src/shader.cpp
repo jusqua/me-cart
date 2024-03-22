@@ -7,7 +7,7 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath) {
   auto fragmentShader = importShader(fragmentPath, GL_FRAGMENT_SHADER);
 
   // Attach shaders to program
-  linkShaders({vertexShader, fragmentShader});
+  this->linkShaders({vertexShader, fragmentShader});
 }
 
 // Shader constructor with vertex, geometry and fragment shaders
@@ -18,22 +18,22 @@ Shader::Shader(const char *vertexPath, const char *geometryPath, const char *fra
   auto fragmentShader = importShader(fragmentPath, GL_FRAGMENT_SHADER);
 
   // Attach shaders to program
-  linkShaders({vertexShader, geometryShader, fragmentShader});
+  this->linkShaders({vertexShader, geometryShader, fragmentShader});
 }
 
 // Shader destructor
 Shader::~Shader() {
-  destroy();
+  this->destroy();
 }
 
 // Activate shader program
 void Shader::activate(void) {
-  glUseProgram(ID);
+  glUseProgram(this->ID);
 }
 
 // Destroy shader program
 void Shader::destroy(void) {
-  glDeleteProgram(ID);
+  glDeleteProgram(this->ID);
 }
 
 void Shader::linkShaders(std::vector<unsigned int> shaders) {
@@ -41,15 +41,15 @@ void Shader::linkShaders(std::vector<unsigned int> shaders) {
   char log[512];
 
   // Create shader program
-  ID = glCreateProgram();
+  this->ID = glCreateProgram();
   for (auto shader : shaders)
-    glAttachShader(ID, shader);
-  glLinkProgram(ID);
+    glAttachShader(this->ID, shader);
+  glLinkProgram(this->ID);
 
   // Check for link errors
-  glGetProgramiv(ID, GL_LINK_STATUS, &success);
+  glGetProgramiv(this->ID, GL_LINK_STATUS, &success);
   if (!success) {
-    glGetProgramInfoLog(ID, 512, NULL, log);
+    glGetProgramInfoLog(this->ID, 512, NULL, log);
     std::cerr << "ERROR: Failed to link shaders\n"
               << log << std::endl;
   }

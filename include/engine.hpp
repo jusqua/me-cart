@@ -23,7 +23,7 @@ void scrollCallbackWrapper(GLFWwindow *window, double xoffset, double yoffset);
 
 class Engine {
  public:
-  Engine(pgm_t _terrain);
+  Engine(pgm_t terrain);
   ~Engine();
 
   void init();

@@ -1,7 +1,7 @@
 #include <engine.hpp>
 
 // Engine constructor
-Engine::Engine(pgm_t _terrain) {
+Engine::Engine(pgm_t terrain) {
   // Initialize GLFW
   if (!glfwInit()) exit(EXIT_FAILURE);
 
@@ -12,24 +12,24 @@ Engine::Engine(pgm_t _terrain) {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
   // Create window with default values and fullscreen mode
-  window = glfwCreateWindow(DEFAULT_WINDOW_WIDTH,
-                            DEFAULT_WINDOW_HEIGHT,
-                            DEFAULT_WINDOW_PREFIX,
-                            glfwGetPrimaryMonitor(),
-                            NULL);
+  this->window = glfwCreateWindow(DEFAULT_WINDOW_WIDTH,
+                                  DEFAULT_WINDOW_HEIGHT,
+                                  DEFAULT_WINDOW_PREFIX,
+                                  glfwGetPrimaryMonitor(),
+                                  NULL);
 
   // Check for window initialization errors
-  if (window == NULL) {
+  if (this->window == NULL) {
     glfwTerminate();
     throw std::runtime_error(ERROR_PREFIX + "Failed to create GLFW window");
   }
 
   // Attach window to context
-  glfwMakeContextCurrent(window);
+  glfwMakeContextCurrent(this->window);
   // Hide cursor and attach to center of screen
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   // Set user pointer for callbacks
-  glfwSetWindowUserPointer(window, this);
+  glfwSetWindowUserPointer(this->window, this);
   // Enable depth simulation
   glEnable(GL_DEPTH_TEST);
 
@@ -38,7 +38,7 @@ Engine::Engine(pgm_t _terrain) {
 
   // Check for importing errors
   if (glewInitResult != GLEW_OK) {
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(this->window);
     glfwTerminate();
     throw std::runtime_error(ERROR_PREFIX + "Failed to import GLEW extensions");
   }
@@ -47,20 +47,20 @@ Engine::Engine(pgm_t _terrain) {
   glfwSetCursorPosCallback(window, cursorPosCallbackWrapper);
   glfwSetScrollCallback(window, scrollCallbackWrapper);
 
-  terrain = _terrain;
-  camera = Camera(glm::vec3(0.0f, terrain.content[terrain.height / 2 + terrain.width / 2], 0.0f));
-  windowWidth = DEFAULT_WINDOW_WIDTH;
-  windowHeight = DEFAULT_WINDOW_HEIGHT;
-  lastX = DEFAULT_WINDOW_WIDTH / 2.0f;
-  lastY = DEFAULT_WINDOW_HEIGHT / 2.0f;
-  deltaTime = glfwGetTime();
-  lastTime = glfwGetTime();
-  firstCursor = true;
+  this->terrain = terrain;
+  this->camera = Camera(glm::vec3(0.0f, terrain.content[terrain.height / 2 + terrain.width / 2], 0.0f));
+  this->windowWidth = DEFAULT_WINDOW_WIDTH;
+  this->windowHeight = DEFAULT_WINDOW_HEIGHT;
+  this->lastX = DEFAULT_WINDOW_WIDTH / 2.0f;
+  this->lastY = DEFAULT_WINDOW_HEIGHT / 2.0f;
+  this->deltaTime = glfwGetTime();
+  this->lastTime = glfwGetTime();
+  this->firstCursor = true;
 }
 
 // Engine destructor
 Engine::~Engine() {
-  glfwDestroyWindow(window);
+  glfwDestroyWindow(this->window);
   glfwTerminate();
 }
 
@@ -124,16 +124,19 @@ void Engine::init(void) {
   Shader lightProgram("resources/shaders/light.vert", "resources/shaders/light.frag");
   Shader terrainProgram("resources/shaders/default.vert", "resources/shaders/default.frag");
 
-  while (!glfwWindowShouldClose(window)) {
+  while (!glfwWindowShouldClose(this->window)) {
     auto currentTime = glfwGetTime();
-    deltaTime = currentTime - lastTime;
-    lastTime = currentTime;
+    this->deltaTime = currentTime - this->lastTime;
+    this->lastTime = currentTime;
 
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    auto view = camera.getView();
-    auto projection = glm::perspective(glm::radians(camera.fov), (float)windowWidth / windowHeight, 0.1f, 800.0f);
+    auto view = this->camera.getView();
+    auto projection = glm::perspective(glm::radians(camera.fov),
+                                       (float)this->windowWidth / this->windowHeight,
+                                       0.1f,
+                                       800.0f);
 
     terrainProgram.activate();
     terrainVAO.bind();
@@ -154,11 +157,11 @@ void Engine::init(void) {
     glUniformMatrix4fv(glGetUniformLocation(terrainProgram.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
     auto modelLocation = glGetUniformLocation(terrainProgram.ID, "model");
-    for (int i = 0; i < terrain.height; i++) {
+    for (int i = 0; i < this->terrain.height; i++) {
       auto start = glm::translate(glm::mat4(1.0f),
-                                  glm::vec3(-terrain.height / 2.0f + i, 0.0f, -terrain.width / 2.0f));
-      for (int j = 0; j < terrain.width; j++) {
-        auto relief = terrain.content[terrain.width * i + j];
+                                  glm::vec3(-this->terrain.height / 2.0f + i, 0.0f, -this->terrain.width / 2.0f));
+      for (int j = 0; j < this->terrain.width; j++) {
+        auto relief = this->terrain.content[this->terrain.width * i + j];
         auto model = glm::translate(start, glm::vec3(0.0f, relief * 1.0f, j * 1.0f));
         glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -176,55 +179,55 @@ void Engine::init(void) {
 
     glfwSwapBuffers(window);
     glfwPollEvents();
-    processKeyboardEvents();
+    this->processKeyboardEvents();
   }
 }
 
 // Retrive framebuffer reshape events
 void Engine::framebufferSizeCallback(int width, int height) {
   // Scale screen based on framebuffer dimensions
-  windowWidth = width;
-  windowHeight = height;
+  this->windowWidth = width;
+  this->windowHeight = height;
   glViewport(0, 0, width, height);
 }
 
 // Retrive mouse cursor events
 void Engine::cursorPosCallback(double xpos, double ypos) {
-  if (firstCursor) {
-    lastX = xpos;
-    lastY = ypos;
-    firstCursor = false;
+  if (this->firstCursor) {
+    this->lastX = xpos;
+    this->lastY = ypos;
+    this->firstCursor = false;
   }
 
-  float xoffset = (xpos - lastX);
-  float yoffset = (lastY - ypos);
+  float xoffset = (xpos - this->lastX);
+  float yoffset = (this->lastY - ypos);
 
-  camera.processCursorEvents(xoffset, yoffset);
+  this->camera.processCursorEvents(xoffset, yoffset);
 }
 
 // Retrive mouse scroll events
 void Engine::scrollCallback(double xoffset, double yoffset) {
-  camera.processScrollEvents(yoffset);
+  this->camera.processScrollEvents(yoffset);
 }
 
 // Retrive keyboard activation events
 void Engine::processKeyboardEvents(void) {
   // Press Escape to quit
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    glfwSetWindowShouldClose(window, true);
+  if (glfwGetKey(this->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    glfwSetWindowShouldClose(this->window, true);
   // Process camera movement
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    camera.processKeyboardEvents(CAMERA_MOVEMENT::FORWARD, deltaTime);
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    camera.processKeyboardEvents(CAMERA_MOVEMENT::BACKWARD, deltaTime);
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    camera.processKeyboardEvents(CAMERA_MOVEMENT::LEFT, deltaTime);
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    camera.processKeyboardEvents(CAMERA_MOVEMENT::RIGHT, deltaTime);
-  if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-    camera.movementSpeed = std::min(DEFAULT_SPEED * 10, camera.movementSpeed + DEFAULT_SPEED);
-  if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-    camera.movementSpeed = std::max(DEFAULT_SPEED, camera.movementSpeed - DEFAULT_SPEED);
+  if (glfwGetKey(this->window, GLFW_KEY_W) == GLFW_PRESS)
+    this->camera.processKeyboardEvents(CAMERA_MOVEMENT::FORWARD, this->deltaTime);
+  if (glfwGetKey(this->window, GLFW_KEY_S) == GLFW_PRESS)
+    this->camera.processKeyboardEvents(CAMERA_MOVEMENT::BACKWARD, this->deltaTime);
+  if (glfwGetKey(this->window, GLFW_KEY_A) == GLFW_PRESS)
+    this->camera.processKeyboardEvents(CAMERA_MOVEMENT::LEFT, this->deltaTime);
+  if (glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS)
+    this->camera.processKeyboardEvents(CAMERA_MOVEMENT::RIGHT, this->deltaTime);
+  if (glfwGetKey(this->window, GLFW_KEY_UP) == GLFW_PRESS)
+    this->camera.movementSpeed = std::min(DEFAULT_SPEED * 10, this->camera.movementSpeed + DEFAULT_SPEED);
+  if (glfwGetKey(this->window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    this->camera.movementSpeed = std::max(DEFAULT_SPEED, this->camera.movementSpeed - DEFAULT_SPEED);
 }
 
 // Wrappers

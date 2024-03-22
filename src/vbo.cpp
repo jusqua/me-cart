@@ -8,7 +8,7 @@ VBO::VBO(GLfloat *vertices, GLsizeiptr size) {
 }
 
 VBO::~VBO(void) {
-  destroy();
+  this->destroy();
 }
 
 void VBO::bind(void) {
