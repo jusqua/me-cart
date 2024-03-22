@@ -2,6 +2,14 @@
 
 ## How to use this project?
 
+This project in made in C++ with OpenGL, some tools and libraries are needed to this program run correctly:
+  - Clang
+  - Make
+  - GLFW
+  - GLEW
+  - GLM
+  - STB
+
 ### Setting up
 
 #### Fedora
@@ -18,17 +26,15 @@ sudo apt install libglew-dev libglfw3-dev libglm-dev libstb-dev clang make
 
 ### Running
 
-You can run immediately by using `make run`, it builds and run the project with default params.
-
-Or you can build first and the result file `me-cart` and pass the params by yourself
+You need to build first with `make` that returns a binary `me-cart`:
 ```
-make build
+make
 ./me-cart [terrain file path]
 ```
 
 ## Actions
 
-Use `Mouse` to move around, it's implements a fly-like camera
+Use `Mouse` to move around, it's implements a fly-like camera:
 
 | Key        | Description             |
 | ---------- | ----------------------- |
