@@ -9,7 +9,7 @@ class Shader {
   unsigned int ID;
   Shader(const char *vertexPath, const char *fragmentPath);
   Shader(const char *vertexPath, const char *geometryPath, const char *fragmentPath);
-  ~Shader();
+  ~Shader(void);
 
   void activate(void);
   void destroy(void);

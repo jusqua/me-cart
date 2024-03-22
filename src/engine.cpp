@@ -59,7 +59,7 @@ Engine::Engine(pgm_t terrain) {
 }
 
 // Engine destructor
-Engine::~Engine() {
+Engine::~Engine(void) {
   glfwDestroyWindow(this->window);
   glfwTerminate();
 }

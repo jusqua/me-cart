@@ -22,7 +22,7 @@ Shader::Shader(const char *vertexPath, const char *geometryPath, const char *fra
 }
 
 // Shader destructor
-Shader::~Shader() {
+Shader::~Shader(void) {
   this->destroy();
 }
 

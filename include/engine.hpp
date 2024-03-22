@@ -24,7 +24,7 @@ void scrollCallbackWrapper(GLFWwindow *window, double xoffset, double yoffset);
 class Engine {
  public:
   Engine(pgm_t terrain);
-  ~Engine();
+  ~Engine(void);
 
   void init();
   void framebufferSizeCallback(int width, int height);
