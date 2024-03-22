@@ -234,6 +234,10 @@ void Engine::processKeyboardEvents(void) {
     camera.processKeyboardEvents(CAMERA_MOVEMENT::LEFT, deltaTime);
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     camera.processKeyboardEvents(CAMERA_MOVEMENT::RIGHT, deltaTime);
+  if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    camera.movementSpeed = std::min(DEFAULT_SPEED * 10, camera.movementSpeed + DEFAULT_SPEED);
+  if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    camera.movementSpeed = std::max(DEFAULT_SPEED, camera.movementSpeed - DEFAULT_SPEED);
 }
 
 // Wrappers

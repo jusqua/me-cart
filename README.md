@@ -30,11 +30,13 @@ make build
 
 Use `Mouse` to move around, it's implements a fly-like camera
 
-| Key         | Description   |
-| ----------- | ------------- |
-| W           | Move forward  |
-| S           | Move backward |
-| A           | Move to left  |
-| D           | Move to right |
-| Escape      | Quit          |
+| Key        | Description             |
+| ---------- | ----------------------- |
+| W          | Move forward            |
+| S          | Move backward           |
+| A          | Move to left            |
+| D          | Move to right           |
+| Escape     | Quit                    |
+| Arrow up   | Increase movement speed |
+| Arrow down | Decrease movement speed |
 
