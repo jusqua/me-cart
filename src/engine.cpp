@@ -87,29 +87,30 @@ void Engine::init(void) {
     terrainProgram.activate();
     terrainVAO.bind();
 
-    glUniform3fv(glGetUniformLocation(terrainProgram.ID, "camera_Position"), 1, glm::value_ptr(camera.position));
+    terrainProgram.setUniform("camera_Position", camera.position);
 
-    glUniform3fv(glGetUniformLocation(terrainProgram.ID, "light.direction"), 1, glm::value_ptr(glm::vec3(-0.2f, -1.0f, -0.3f)));
-    glUniform3fv(glGetUniformLocation(terrainProgram.ID, "light.ambient"), 1, glm::value_ptr(glm::vec3(0.5f)));
-    glUniform3fv(glGetUniformLocation(terrainProgram.ID, "light.diffuse"), 1, glm::value_ptr(glm::vec3(0.8f)));
-    glUniform3fv(glGetUniformLocation(terrainProgram.ID, "light.specular"), 1, glm::value_ptr(glm::vec3(1.0f)));
+    terrainProgram.setUniform("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+    terrainProgram.setUniform("light.ambient", glm::vec3(0.5f));
+    terrainProgram.setUniform("light.diffuse", glm::vec3(0.8f));
+    terrainProgram.setUniform("light.specular", glm::vec3(1.0f));
 
-    glUniform3fv(glGetUniformLocation(terrainProgram.ID, "material.ambient"), 1, glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f)));
-    glUniform3fv(glGetUniformLocation(terrainProgram.ID, "material.diffuse"), 1, glm::value_ptr(glm::vec3(1.0f, 0.5f, 0.31f)));
-    glUniform3fv(glGetUniformLocation(terrainProgram.ID, "material.specular"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
-    glUniform1f(glGetUniformLocation(terrainProgram.ID, "material.shininess"), 32.0f);
+    terrainProgram.setUniform("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+    terrainProgram.setUniform("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+    terrainProgram.setUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+    terrainProgram.setUniform("material.shininess", 32.0f);
 
-    glUniformMatrix4fv(glGetUniformLocation(terrainProgram.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(glGetUniformLocation(terrainProgram.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    terrainProgram.setUniform("view", view);
+    terrainProgram.setUniform("projection", projection);
 
-    auto modelLocation = glGetUniformLocation(terrainProgram.ID, "model");
+    auto start = glm::translate(glm::mat4(1.0f), glm::vec3(-this->terrain.height / 2.0f, 0.0f, -this->terrain.width / 2.0f));
     for (int i = 0; i < this->terrain.height; i++) {
-      auto start = glm::translate(glm::mat4(1.0f),
-                                  glm::vec3(-this->terrain.height / 2.0f + i, 0.0f, -this->terrain.width / 2.0f));
+      auto right = glm::translate(start, glm::vec3((float)i, 0.0f, 0.0f));
+
       for (int j = 0; j < this->terrain.width; j++) {
         auto relief = this->terrain.content[this->terrain.width * i + j];
-        auto model = glm::translate(start, glm::vec3(0.0f, relief * 1.0f, j * 1.0f));
-        glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+        auto model = glm::translate(right, glm::vec3(0.0f, (float)relief, (float)j));
+
+        terrainProgram.setUniform("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
       }
     }
@@ -118,9 +119,9 @@ void Engine::init(void) {
     lightVAO.bind();
     auto model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 500.0f, 0.0f));
     model = glm::scale(model, glm::vec3(50.0f));
-    glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    lightProgram.setUniform("view", view);
+    lightProgram.setUniform("projection", projection);
+    lightProgram.setUniform("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     window.swap();

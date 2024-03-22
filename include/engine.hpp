@@ -8,10 +8,6 @@
 #include <vbo.hpp>
 #include <vao.hpp>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 class Engine {
  public:
   Engine(pgm_t terrain);
