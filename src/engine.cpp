@@ -1,4 +1,5 @@
 #include <engine.hpp>
+#include <glm/common.hpp>
 
 // Engine constructor
 Engine::Engine(pgm_t terrain) {
@@ -67,8 +68,12 @@ void Engine::init(void) {
   auto lightVAO = VAO();
   lightVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), 0);
 
+  auto cartVAO = VAO();
+  cartVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), 0);
+
+  Shader terrainProgram("resources/shaders/terrain.vert", "resources/shaders/terrain.frag");
   Shader lightProgram("resources/shaders/light.vert", "resources/shaders/light.frag");
-  Shader terrainProgram("resources/shaders/default.vert", "resources/shaders/default.frag");
+  Shader cartProgram("resources/shaders/cart.vert", "resources/shaders/cart.frag");
 
   while (!window.shouldClose()) {
     auto currentTime = glfwGetTime();
@@ -81,7 +86,7 @@ void Engine::init(void) {
     auto view = this->camera.getView();
     auto projection = glm::perspective(glm::radians(camera.fov),
                                        (float)this->window.width / this->window.height,
-                                       0.1f,
+                                       0.2f,
                                        800.0f);
 
     terrainProgram.activate();
@@ -117,11 +122,19 @@ void Engine::init(void) {
 
     lightProgram.activate();
     lightVAO.bind();
-    auto model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 500.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(50.0f));
+    auto model = glm::scale(glm::mat4(1.0f), glm::vec3(50.0f));
+    model = glm::translate(model, glm::vec3(0.0f, 500.0f, 0.0f));
     lightProgram.setUniform("view", view);
     lightProgram.setUniform("projection", projection);
     lightProgram.setUniform("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    cartProgram.activate();
+    cartVAO.bind();
+    model = glm::translate(glm::mat4(1.0f), glm::vec3(this->camera.position.x, 15.0f, this->camera.position.z));
+    cartProgram.setUniform("view", view);
+    cartProgram.setUniform("projection", projection);
+    cartProgram.setUniform("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     window.swap();
