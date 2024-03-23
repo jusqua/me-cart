@@ -41,16 +41,6 @@ class Camera {
       float yaw = DEFAULT_YAW,
       float pitch = DEFAULT_PITCH);
 
-  Camera(
-      float posX,
-      float posY,
-      float posZ,
-      float upX,
-      float upY,
-      float upZ,
-      float yaw = DEFAULT_YAW,
-      float pitch = DEFAULT_PITCH);
-
   glm::mat4 getView(void);
   void processKeyboardEvents(CAMERA_MOVEMENT type, float deltaTime);
   void processCursorEvents(float xoffset, float yoffset, bool constrainPitch = true);
