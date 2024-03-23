@@ -35,7 +35,7 @@ typedef struct {
   int width, height;
   std::string description;
   int max;
-  std::vector<int> content;
+  std::vector<std::vector<int>> content;
 } pgm_t;
 
 std::string importSource(const char *path);

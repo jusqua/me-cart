@@ -105,13 +105,14 @@ pgm_t importPGM(const char *path) {
   std::istringstream(line) >> pgm.max;
 
   // Get content
-  pgm.content = std::vector<int>(pgm.width * pgm.height);
+  pgm.content = std::vector<std::vector<int>>(pgm.height);
   for (size_t i = 0; i < pgm.height; i++) {
     std::getline(ssource, line);
     sline = std::istringstream(line);
+    pgm.content[i] = std::vector<int>(pgm.width);
     for (size_t j = 0; j < pgm.width; j++) {
       std::getline(sline, token, ' ');
-      std::istringstream(token) >> pgm.content[(pgm.width * i) + j];
+      std::istringstream(token) >> pgm.content[i][j];
     }
   }
 
