@@ -6,14 +6,15 @@ OBJDIR = obj
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
 
 TARGET = me-cart
-LDFLAGS = -lGL -lGLU -lGLEW -lglfw -I./include
+CXXFLAGS = -stdlib=libstdc++ -pthread -I./include 
+LDFLAGS = -lGL -lGLU -lGLEW -lglfw
 
 $(TARGET): $(OBJECTS)
-	@$(CXX) $(LDFLAGS) $(OBJECTS) -o $(TARGET)
+	@$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJECTS) -o $(TARGET)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(OBJDIR)
-	@$(CXX) -c $(LDFLAGS) $< -o $@
+	@$(CXX) -c $(CXXFLAGS) $< -o $@
 
 clean:
 	@$(RM) -rf $(OBJDIR) $(TARGET)
