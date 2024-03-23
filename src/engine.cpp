@@ -46,9 +46,10 @@ void Engine::init(void) {
 
   float cartYaw = 0.0f;
   glm::vec3 cartFront;
+  glm::vec3 cartUp(0.0f, 1.0f, 0.0f);
   glm::vec3 cartPosition(0.0f, terrain.content[terrain.height / 2][terrain.width / 2], 0.0f);
   glm::vec3 cameraOffset(0.0f, 10.0f, 15.0f);
-  auto movementSpeed = 10.0f;
+  auto movementSpeed = 15.0f;
   auto wheelTurnSpeed = 5.0f;
   auto maxWheelTurn = 45.0f;
   camera.pitch = -45.0f;
@@ -128,7 +129,8 @@ void Engine::init(void) {
     cartProgram.setUniform("view", view);
     cartProgram.setUniform("projection", projection);
 
-    model = glm::translate(glm::mat4(1.0f), cartPosition);
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, cartPosition);
     model = glm::translate(model, glm::vec3(-4.0f * cartScaleFactor, 0.0f, -4.0f * cartScaleFactor));
 
     // Cart base
@@ -181,6 +183,8 @@ void Engine::init(void) {
 
     window.swap();
     this->processKeyboardEvents();
+
+    // Cart keyboard controls
     auto velocity = movementSpeed * deltaTime;
     if (window.getKeyBehavior(GLFW_KEY_W, GLFW_PRESS))
       cartPosition += cartFront * velocity;
@@ -190,11 +194,25 @@ void Engine::init(void) {
       cartYaw += wheelTurnSpeed;
     if (window.getKeyBehavior(GLFW_KEY_A, GLFW_PRESS))
       cartYaw -= wheelTurnSpeed;
+
+    if (cartYaw < 0.0f)
+      cartYaw += 360.0f;
+    else if (cartYaw > 360.0f)
+      cartYaw -= 360.0f;
+
     glm::vec3 _cartFront;
     _cartFront.x = sin(glm::radians(cartYaw));
     _cartFront.y = 0.0f;
     _cartFront.z = -cos(glm::radians(cartYaw));
     cartFront = glm::normalize(_cartFront);
+
+    auto cartTerrainX = (int)cartPosition.x + terrain.height / 2;
+    auto cartTerrainZ = (int)cartPosition.z + terrain.width / 2;
+    if (cartTerrainX >= 0 && cartTerrainX < terrain.height && cartTerrainZ >= 0 && cartTerrainZ < terrain.width)
+      cartPosition.y = terrain.content[cartTerrainX][cartTerrainZ];
+
+    // camera.yaw = cartYaw;
+    // camera.updateVectors();
   }
 }
 
