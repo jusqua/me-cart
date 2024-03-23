@@ -1,5 +1,55 @@
 #include <utils.hpp>
 
+// Block vertex object array
+// clang-format off
+const float BLOCK_VERTICES[] = {
+  -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+   0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+   0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+   0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+  -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+  -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+  -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+   0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+   0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+   0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+  -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+  -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+  -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+  -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+  -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+  -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+  -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+  -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+   0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+   0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+   0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+   0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+   0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+   0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+  -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+   0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+   0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+   0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+  -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+  -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+  -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+   0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+   0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+   0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+  -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+  -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+};
+// clang-format on
+
+// Size of block vertex object array
+const GLsizeiptr BLOCK_VERTICES_SIZE = sizeof(BLOCK_VERTICES);
+
 // Import source file from path
 std::string importSource(const char *path) {
   std::string source;
