@@ -21,7 +21,7 @@ sudo dnf install glew-devel glfw-devel glm-devel stb-devel clang make
 #### Debian/Ubuntu
 
 ```
-sudo apt install libglew-dev libglfw3-dev libglm-dev libstb-dev clang make
+sudo apt install libstdc++-12-dev libglew-dev libglfw3-dev libglm-dev libstb-dev clang make
 ```
 
 ### Running
