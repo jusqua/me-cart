@@ -43,6 +43,7 @@ void Engine::init(void) {
                                        0.2f,
                                        800.0f);
 
+    // Terrain Logic
     terrainProgram.activate();
     terrainVAO.bind();
 
@@ -74,6 +75,7 @@ void Engine::init(void) {
       }
     }
 
+    // Light Logic
     lightProgram.activate();
     lightVAO.bind();
     auto model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 500.0f, 0.0f));
@@ -83,13 +85,58 @@ void Engine::init(void) {
     lightProgram.setUniform("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
+    // Cart Logic
     cartProgram.activate();
     cartVAO.bind();
-    model = glm::translate(glm::mat4(1.0f), glm::vec3(this->camera.position.x, 15.0f, this->camera.position.z));
+    auto scaleFactor = 0.25f;
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 11.0f, 0.0f));
+    model = glm::translate(model, glm::vec3(-4.0f * scaleFactor, 0.0f, -4.0f * scaleFactor));
     cartProgram.setUniform("view", view);
     cartProgram.setUniform("projection", projection);
-    cartProgram.setUniform("model", model);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // Cart base
+    for (int j = 0; j < 3; j++) {
+      auto modelY = glm::translate(model, glm::vec3(0.0f, j * scaleFactor, 0.0f));
+      for (int i = 0; i < 8; i++) {
+        auto modelYX = glm::translate(modelY, glm::vec3(i * scaleFactor, 0.0f, 0.0f));
+        for (int k = 0; k < 16; k++) {
+          auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * scaleFactor));
+          auto _model = glm::scale(modelYXZ, glm::vec3(scaleFactor));
+          cartProgram.setUniform("model", _model);
+          glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+      }
+    }
+
+    // Cart rear view
+    for (int j = 3; j < 6; j++) {
+      auto modelY = glm::translate(model, glm::vec3(0.0f, j * scaleFactor, 0.0f));
+      for (int i = 0; i < 8; i++) {
+        auto modelYX = glm::translate(modelY, glm::vec3(i * scaleFactor, 0.0f, 0.0f));
+        for (int k = 0; k < 6; k++) {
+          auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * scaleFactor));
+          auto _model = glm::scale(modelYXZ, glm::vec3(scaleFactor));
+          cartProgram.setUniform("model", _model);
+          glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+      }
+    }
+
+    // Cart wheels
+    auto modelY = glm::translate(model, glm::vec3(-scaleFactor / 2.0f, -scaleFactor / 2.0f, scaleFactor * 3));
+    for (int i = 0; i < 2; i++) {
+      auto modelYX = glm::translate(modelY, glm::vec3(i * scaleFactor * 8, 0.0f, 0.0f));
+      for (int k = 0; k < 2; k++) {
+        auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * scaleFactor * 10));
+        for (int r = 0; r < 90; r++) {
+          auto modelYXZR = glm::rotate(modelYXZ, glm::degrees((float)r), glm::vec3(1.0f, 0.0f, 0.0f));
+          auto _model = glm::scale(modelYXZR, glm::vec3(scaleFactor / 2.0f, scaleFactor * 2.0f, scaleFactor * 2.0f));
+          cartProgram.setUniform("model", _model);
+          glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+      }
+    }
 
     window.swap();
     this->processKeyboardEvents();
