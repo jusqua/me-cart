@@ -11,7 +11,7 @@ struct material_t {
   float shininess;
 };
 
-struct light_t {
+struct directional_light_t {
   vec3 ambient;
   vec3 diffuse;
   vec3 specular;
@@ -20,7 +20,7 @@ struct light_t {
 
 uniform vec3 camera_Position;
 uniform material_t material;
-uniform light_t light;
+uniform directional_light_t light;
 
 void main(void) {
   vec3 ambient = light.ambient * material.ambient;
