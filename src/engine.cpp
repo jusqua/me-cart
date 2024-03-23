@@ -4,7 +4,6 @@
 // Engine constructor
 Engine::Engine(pgm_t terrain) {
   this->terrain = terrain;
-  this->camera = Camera(glm::vec3(0.0f, terrain.content[terrain.height / 2 + terrain.width / 2], 0.0f));
 
   this->window.setFramebufferSizeCallback(Engine::framebufferSizeCallback);
   this->window.setCursorPosCallback(Engine::cursorPosCallback);
@@ -33,6 +32,7 @@ void Engine::init(void) {
   auto cartVAO = VAO();
   cartVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), 0);
   cartVAO.linkAttrib(objectVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+  auto cartScaleFactor = 0.25f;
   // Green plastic material
   material_t cartBodyworkMaterial = {glm::vec3(0.0f),
                                      glm::vec3(0.1f, 0.35f, 0.1f),
@@ -43,6 +43,16 @@ void Engine::init(void) {
                                   glm::vec3(0.01f),
                                   glm::vec3(0.5f),
                                   0.25f};
+
+  float cartYaw = 0.0f;
+  glm::vec3 cartFront;
+  glm::vec3 cartPosition(0.0f, terrain.content[terrain.height / 2][terrain.width / 2], 0.0f);
+  glm::vec3 cameraOffset(0.0f, 10.0f, 15.0f);
+  auto movementSpeed = 10.0f;
+  auto wheelTurnSpeed = 5.0f;
+  auto maxWheelTurn = 45.0f;
+  camera.pitch = -45.0f;
+  camera.updateVectors();
 
   Shader terrainProgram("resources/shaders/terrain.vert", "resources/shaders/terrain.frag");
   Shader lightProgram("resources/shaders/light.vert", "resources/shaders/light.frag");
@@ -56,6 +66,7 @@ void Engine::init(void) {
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    camera.position = cartPosition + cameraOffset;
     auto view = this->camera.getView();
     auto projection = glm::perspective(glm::radians(camera.fov),
                                        (float)this->window.width / this->window.height,
@@ -86,8 +97,7 @@ void Engine::init(void) {
       auto right = glm::translate(start, glm::vec3((float)i, 0.0f, 0.0f));
 
       for (int j = 0; j < this->terrain.width; j++) {
-        auto relief = this->terrain.content[this->terrain.width * i + j];
-        auto model = glm::translate(right, glm::vec3(0.0f, (float)relief, (float)j));
+        auto model = glm::translate(right, glm::vec3(0.0f, (float)this->terrain.content[i][j], (float)j));
 
         terrainProgram.setUniform("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -118,10 +128,8 @@ void Engine::init(void) {
     cartProgram.setUniform("view", view);
     cartProgram.setUniform("projection", projection);
 
-    auto scaleFactor = 0.25f;
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 11.0f, 0.0f));
-    model = glm::translate(model, glm::vec3(-4.0f * scaleFactor, 0.0f, -4.0f * scaleFactor));
+    model = glm::translate(glm::mat4(1.0f), cartPosition);
+    model = glm::translate(model, glm::vec3(-4.0f * cartScaleFactor, 0.0f, -4.0f * cartScaleFactor));
 
     // Cart base
     cartProgram.setUniform("material.ambient", cartBodyworkMaterial.ambient);
@@ -130,12 +138,12 @@ void Engine::init(void) {
     cartProgram.setUniform("material.shininess", cartBodyworkMaterial.shininess);
 
     for (int j = 0; j < 3; j++) {
-      auto modelY = glm::translate(model, glm::vec3(0.0f, j * scaleFactor, 0.0f));
+      auto modelY = glm::translate(model, glm::vec3(0.0f, j * cartScaleFactor, 0.0f));
       for (int i = 0; i < 8; i++) {
-        auto modelYX = glm::translate(modelY, glm::vec3(i * scaleFactor, 0.0f, 0.0f));
+        auto modelYX = glm::translate(modelY, glm::vec3(i * cartScaleFactor, 0.0f, 0.0f));
         for (int k = 0; k < 16; k++) {
-          auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * scaleFactor));
-          auto _model = glm::scale(modelYXZ, glm::vec3(scaleFactor));
+          auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * cartScaleFactor));
+          auto _model = glm::scale(modelYXZ, glm::vec3(cartScaleFactor));
           cartProgram.setUniform("model", _model);
           glDrawArrays(GL_TRIANGLES, 0, 36);
         }
@@ -143,12 +151,12 @@ void Engine::init(void) {
     }
 
     for (int j = 3; j < 6; j++) {
-      auto modelY = glm::translate(model, glm::vec3(0.0f, j * scaleFactor, 0.0f));
+      auto modelY = glm::translate(model, glm::vec3(0.0f, j * cartScaleFactor, 0.0f));
       for (int i = 0; i < 8; i++) {
-        auto modelYX = glm::translate(modelY, glm::vec3(i * scaleFactor, 0.0f, 0.0f));
+        auto modelYX = glm::translate(modelY, glm::vec3(i * cartScaleFactor, 0.0f, 0.0f));
         for (int k = 0; k < 6; k++) {
-          auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * scaleFactor));
-          auto _model = glm::scale(modelYXZ, glm::vec3(scaleFactor));
+          auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * cartScaleFactor));
+          auto _model = glm::scale(modelYXZ, glm::vec3(cartScaleFactor));
           cartProgram.setUniform("model", _model);
           glDrawArrays(GL_TRIANGLES, 0, 36);
         }
@@ -160,23 +168,33 @@ void Engine::init(void) {
     cartProgram.setUniform("material.diffuse", cartWheelMaterial.diffuse);
     cartProgram.setUniform("material.specular", cartWheelMaterial.specular);
     cartProgram.setUniform("material.shininess", cartWheelMaterial.shininess);
-
-    auto modelY = glm::translate(model, glm::vec3(-scaleFactor / 2.0f, -scaleFactor / 2.0f, scaleFactor * 3));
+    auto modelY = glm::translate(model, glm::vec3(-cartScaleFactor / 2.0f, -cartScaleFactor / 2.0f, cartScaleFactor * 3));
     for (int i = 0; i < 2; i++) {
-      auto modelYX = glm::translate(modelY, glm::vec3(i * scaleFactor * 8, 0.0f, 0.0f));
+      auto modelYX = glm::translate(modelY, glm::vec3(i * cartScaleFactor * 8, 0.0f, 0.0f));
       for (int k = 0; k < 2; k++) {
-        auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * scaleFactor * 10));
-        for (int r = 0; r < 180; r++) {
-          auto modelYXZR = glm::rotate(modelYXZ, glm::degrees(r / 2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-          auto _model = glm::scale(modelYXZR, glm::vec3(scaleFactor / 2.0f, scaleFactor * 2.0f, scaleFactor * 2.0f));
-          cartProgram.setUniform("model", _model);
-          glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * cartScaleFactor * 10));
+        auto _model = glm::scale(modelYXZ, glm::vec3(cartScaleFactor / 2.0f, cartScaleFactor * 2.0f, cartScaleFactor * 2.0f));
+        cartProgram.setUniform("model", _model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
       }
     }
 
     window.swap();
     this->processKeyboardEvents();
+    auto velocity = movementSpeed * deltaTime;
+    if (window.getKeyBehavior(GLFW_KEY_W, GLFW_PRESS))
+      cartPosition += cartFront * velocity;
+    if (window.getKeyBehavior(GLFW_KEY_S, GLFW_PRESS))
+      cartPosition -= cartFront * velocity;
+    if (window.getKeyBehavior(GLFW_KEY_D, GLFW_PRESS))
+      cartYaw += wheelTurnSpeed;
+    if (window.getKeyBehavior(GLFW_KEY_A, GLFW_PRESS))
+      cartYaw -= wheelTurnSpeed;
+    glm::vec3 _cartFront;
+    _cartFront.x = sin(glm::radians(cartYaw));
+    _cartFront.y = 0.0f;
+    _cartFront.z = -cos(glm::radians(cartYaw));
+    cartFront = glm::normalize(_cartFront);
   }
 }
 
@@ -199,12 +217,12 @@ void Engine::cursorPosCallback(double xpos, double ypos) {
   float xoffset = (xpos - this->lastX);
   float yoffset = (this->lastY - ypos);
 
-  this->camera.processCursorEvents(xoffset, yoffset);
+  // this->camera.processCursorEvents(xoffset, yoffset);
 }
 
 // Retrive mouse scroll events
 void Engine::scrollCallback(double xoffset, double yoffset) {
-  this->camera.processScrollEvents(yoffset);
+  // this->camera.processScrollEvents(yoffset);
 }
 
 // Retrive keyboard activation events
@@ -214,18 +232,18 @@ void Engine::processKeyboardEvents(void) {
     window.close();
 
   // Process camera movement
-  if (window.getKeyBehavior(GLFW_KEY_W, GLFW_PRESS))
-    this->camera.processKeyboardEvents(CAMERA_MOVEMENT::FORWARD, this->deltaTime);
-  if (window.getKeyBehavior(GLFW_KEY_S, GLFW_PRESS))
-    this->camera.processKeyboardEvents(CAMERA_MOVEMENT::BACKWARD, this->deltaTime);
-  if (window.getKeyBehavior(GLFW_KEY_A, GLFW_PRESS))
-    this->camera.processKeyboardEvents(CAMERA_MOVEMENT::LEFT, this->deltaTime);
-  if (window.getKeyBehavior(GLFW_KEY_D, GLFW_PRESS))
-    this->camera.processKeyboardEvents(CAMERA_MOVEMENT::RIGHT, this->deltaTime);
+  // if (window.getKeyBehavior(GLFW_KEY_W, GLFW_PRESS))
+  //   this->camera.processKeyboardEvents(CAMERA_MOVEMENT::FORWARD, this->deltaTime);
+  // if (window.getKeyBehavior(GLFW_KEY_S, GLFW_PRESS))
+  //   this->camera.processKeyboardEvents(CAMERA_MOVEMENT::BACKWARD, this->deltaTime);
+  // if (window.getKeyBehavior(GLFW_KEY_A, GLFW_PRESS))
+  //   this->camera.processKeyboardEvents(CAMERA_MOVEMENT::LEFT, this->deltaTime);
+  // if (window.getKeyBehavior(GLFW_KEY_D, GLFW_PRESS))
+  //   this->camera.processKeyboardEvents(CAMERA_MOVEMENT::RIGHT, this->deltaTime);
 
   // Change camera moviment speed
-  if (window.getKeyBehavior(GLFW_KEY_UP, GLFW_PRESS))
-    this->camera.movementSpeed = std::min(DEFAULT_SPEED * 10, this->camera.movementSpeed + DEFAULT_SPEED);
-  if (window.getKeyBehavior(GLFW_KEY_DOWN, GLFW_PRESS))
-    this->camera.movementSpeed = std::max(DEFAULT_SPEED, this->camera.movementSpeed - DEFAULT_SPEED);
+  // if (window.getKeyBehavior(GLFW_KEY_UP, GLFW_PRESS))
+  //   this->camera.movementSpeed = std::min(DEFAULT_SPEED * 10, this->camera.movementSpeed + DEFAULT_SPEED);
+  // if (window.getKeyBehavior(GLFW_KEY_DOWN, GLFW_PRESS))
+  //   this->camera.movementSpeed = std::max(DEFAULT_SPEED, this->camera.movementSpeed - DEFAULT_SPEED);
 }
