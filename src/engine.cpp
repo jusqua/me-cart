@@ -18,12 +18,31 @@ void Engine::init(void) {
   auto terrainVAO = VAO();
   terrainVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), 0);
   terrainVAO.linkAttrib(objectVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+  material_t terrainMaterial = {glm::vec3(1.0f, 0.5f, 0.31f),
+                                glm::vec3(1.0f, 0.5f, 0.31f),
+                                glm::vec3(0.5f, 0.5f, 0.5f),
+                                32.0f};
 
   auto lightVAO = VAO();
   lightVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), 0);
+  directional_light_t light = {glm::vec3(0.5f),
+                               glm::vec3(0.8f),
+                               glm::vec3(1.0f),
+                               glm::vec3(-0.2f, -1.0f, -0.3f)};
 
   auto cartVAO = VAO();
   cartVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), 0);
+  cartVAO.linkAttrib(objectVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+  // Green plastic material
+  material_t cartBodyworkMaterial = {glm::vec3(0.0f),
+                                     glm::vec3(0.1f, 0.35f, 0.1f),
+                                     glm::vec3(0.45f, 0.55f, 0.45f),
+                                     0.25f};
+  // Black plastic material
+  material_t cartWheelMaterial = {glm::vec3(0.0f),
+                                  glm::vec3(0.01f),
+                                  glm::vec3(0.5f),
+                                  0.25f};
 
   Shader terrainProgram("resources/shaders/terrain.vert", "resources/shaders/terrain.frag");
   Shader lightProgram("resources/shaders/light.vert", "resources/shaders/light.frag");
@@ -49,10 +68,10 @@ void Engine::init(void) {
 
     terrainProgram.setUniform("camera_Position", camera.position);
 
-    terrainProgram.setUniform("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
-    terrainProgram.setUniform("light.ambient", glm::vec3(0.5f));
-    terrainProgram.setUniform("light.diffuse", glm::vec3(0.8f));
-    terrainProgram.setUniform("light.specular", glm::vec3(1.0f));
+    terrainProgram.setUniform("light.ambient", light.ambient);
+    terrainProgram.setUniform("light.diffuse", light.diffuse);
+    terrainProgram.setUniform("light.specular", light.specular);
+    terrainProgram.setUniform("light.direction", light.direction);
 
     terrainProgram.setUniform("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
     terrainProgram.setUniform("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
@@ -88,14 +107,28 @@ void Engine::init(void) {
     // Cart Logic
     cartProgram.activate();
     cartVAO.bind();
+
+    cartProgram.setUniform("camera_Position", camera.position);
+
+    cartProgram.setUniform("light.ambient", light.ambient);
+    cartProgram.setUniform("light.diffuse", light.diffuse);
+    cartProgram.setUniform("light.specular", light.specular);
+    cartProgram.setUniform("light.direction", light.direction);
+
+    cartProgram.setUniform("view", view);
+    cartProgram.setUniform("projection", projection);
+
     auto scaleFactor = 0.25f;
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 11.0f, 0.0f));
     model = glm::translate(model, glm::vec3(-4.0f * scaleFactor, 0.0f, -4.0f * scaleFactor));
-    cartProgram.setUniform("view", view);
-    cartProgram.setUniform("projection", projection);
 
     // Cart base
+    cartProgram.setUniform("material.ambient", cartBodyworkMaterial.ambient);
+    cartProgram.setUniform("material.diffuse", cartBodyworkMaterial.diffuse);
+    cartProgram.setUniform("material.specular", cartBodyworkMaterial.specular);
+    cartProgram.setUniform("material.shininess", cartBodyworkMaterial.shininess);
+
     for (int j = 0; j < 3; j++) {
       auto modelY = glm::translate(model, glm::vec3(0.0f, j * scaleFactor, 0.0f));
       for (int i = 0; i < 8; i++) {
@@ -109,7 +142,6 @@ void Engine::init(void) {
       }
     }
 
-    // Cart rear view
     for (int j = 3; j < 6; j++) {
       auto modelY = glm::translate(model, glm::vec3(0.0f, j * scaleFactor, 0.0f));
       for (int i = 0; i < 8; i++) {
@@ -124,13 +156,18 @@ void Engine::init(void) {
     }
 
     // Cart wheels
+    cartProgram.setUniform("material.ambient", cartWheelMaterial.ambient);
+    cartProgram.setUniform("material.diffuse", cartWheelMaterial.diffuse);
+    cartProgram.setUniform("material.specular", cartWheelMaterial.specular);
+    cartProgram.setUniform("material.shininess", cartWheelMaterial.shininess);
+
     auto modelY = glm::translate(model, glm::vec3(-scaleFactor / 2.0f, -scaleFactor / 2.0f, scaleFactor * 3));
     for (int i = 0; i < 2; i++) {
       auto modelYX = glm::translate(modelY, glm::vec3(i * scaleFactor * 8, 0.0f, 0.0f));
       for (int k = 0; k < 2; k++) {
         auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * scaleFactor * 10));
-        for (int r = 0; r < 90; r++) {
-          auto modelYXZR = glm::rotate(modelYXZ, glm::degrees((float)r), glm::vec3(1.0f, 0.0f, 0.0f));
+        for (int r = 0; r < 180; r++) {
+          auto modelYXZR = glm::rotate(modelYXZ, glm::degrees(r / 2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
           auto _model = glm::scale(modelYXZR, glm::vec3(scaleFactor / 2.0f, scaleFactor * 2.0f, scaleFactor * 2.0f));
           cartProgram.setUniform("model", _model);
           glDrawArrays(GL_TRIANGLES, 0, 36);
