@@ -45,13 +45,13 @@ void Engine::init(void) {
                                   0.25f};
 
   float cartYaw = 0.0f;
-  glm::vec3 cartFront;
+  glm::vec3 cartFront(1.0f, 0.0f, 0.0f);
   glm::vec3 cartUp(0.0f, 1.0f, 0.0f);
   glm::vec3 cartPosition(0.0f, terrain.content[terrain.height / 2][terrain.width / 2], 0.0f);
-  glm::vec3 cameraOffset(0.0f, 4.0f, 6.0f);
+  glm::vec3 cameraOffset(-6.0f, 4.0f, 0.0f);
   auto movementSpeed = 15.0f;
-  auto wheelTurnSpeed = 5.0f;
   auto maxWheelTurn = 45.0f;
+  camera.yaw = 0.0f;
   camera.pitch = -15.0f;
   camera.updateVectors();
 
@@ -137,15 +137,15 @@ void Engine::init(void) {
 
     model = glm::translate(glm::mat4(1.0f), cartPosition);
     model = glm::rotate(model, glm::degrees(cartYaw), cartUp);
-    model = glm::translate(model, cartScaleFactor * glm::vec3(0.0f, 4.0f, 5.0f));
-    model = glm::scale(model, cartScaleFactor * glm::vec3(8.0f, 2.0f, 10.0f));
+    model = glm::translate(model, cartScaleFactor * glm::vec3(-5.0f, 4.0f, 0.0f));
+    model = glm::scale(model, cartScaleFactor * glm::vec3(-10.0f, 2.0f, 8.0f));
     cartProgram.setUniform("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     model = glm::translate(glm::mat4(1.0f), cartPosition);
     model = glm::rotate(model, glm::degrees(cartYaw), cartUp);
     model = glm::translate(model, cartScaleFactor * glm::vec3(0.0f, 6.0f, 0.0f));
-    model = glm::scale(model, cartScaleFactor * glm::vec3(8.0f, 6.0f, 6.0f));
+    model = glm::scale(model, cartScaleFactor * glm::vec3(-6.0f, 6.0f, 8.0f));
     cartProgram.setUniform("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -157,12 +157,12 @@ void Engine::init(void) {
 
     model = glm::translate(glm::mat4(1.0f), cartPosition);
     model = glm::rotate(model, glm::degrees(cartYaw), cartUp);
-    model = glm::translate(model, cartScaleFactor * glm::vec3(0.0f, 3.0f, 4.0f));
+    model = glm::translate(model, cartScaleFactor * glm::vec3(-4.0f, 3.0f, 0.0f));
     for (int i = -1; i < 2; i += 2) {
-      auto modelX = glm::translate(model, cartScaleFactor * glm::vec3(i * 4.0f, 0.0f, 0.0f));
+      auto modelX = glm::translate(model, cartScaleFactor * glm::vec3(i * -4.0f, 0.0f, 0.0f));
       for (int k = -1; k < 2; k += 2) {
         auto modelXZ = glm::translate(modelX, cartScaleFactor * glm::vec3(0.0f, 0.0f, k * 4.0f));
-        auto _model = glm::scale(modelXZ, cartScaleFactor * glm::vec3(0.5f, 2.0f, 2.0f));
+        auto _model = glm::scale(modelXZ, cartScaleFactor * glm::vec3(-2.0f, 2.0f, 0.5f));
         cartProgram.setUniform("model", _model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
       }
@@ -177,21 +177,22 @@ void Engine::init(void) {
       cartPosition += cartFront * velocity;
     if (window.getKeyBehavior(GLFW_KEY_S, GLFW_PRESS))
       cartPosition -= cartFront * velocity;
-    if (window.getKeyBehavior(GLFW_KEY_D, GLFW_PRESS))
-      cartYaw += wheelTurnSpeed;
-    if (window.getKeyBehavior(GLFW_KEY_A, GLFW_PRESS))
-      cartYaw -= wheelTurnSpeed;
+    // if (window.getKeyBehavior(GLFW_KEY_D, GLFW_PRESS))
+    //   cartYaw = 45.0f;
+    // if (window.getKeyBehavior(GLFW_KEY_A, GLFW_PRESS))
+    //   cartYaw = -45.0f;
+    // std::cout << cartYaw << std::endl;
 
-    if (cartYaw < 0.0f)
-      cartYaw += 360.0f;
-    else if (cartYaw > 360.0f)
-      cartYaw -= 360.0f;
+    // if (cartYaw < 0.0f)
+    //   cartYaw += 360.0f;
+    // else if (cartYaw > 360.0f)
+    //   cartYaw -= 360.0f;
 
-    glm::vec3 _cartFront;
-    _cartFront.x = sin(glm::radians(cartYaw));
-    _cartFront.y = 0.0f;
-    _cartFront.z = -cos(glm::radians(cartYaw));
-    cartFront = glm::normalize(_cartFront);
+    // glm::vec3 _cartFront;
+    // _cartFront.x = sin(glm::radians(cartYaw));
+    // _cartFront.y = 0.0f;
+    // _cartFront.z = -cos(glm::radians(cartYaw));
+    // cartFront = glm::normalize(_cartFront);
 
     auto cartTerrainX = (int)cartPosition.x + terrain.height / 2;
     auto cartTerrainZ = (int)cartPosition.z + terrain.width / 2;
