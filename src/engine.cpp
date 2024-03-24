@@ -48,11 +48,11 @@ void Engine::init(void) {
   glm::vec3 cartFront;
   glm::vec3 cartUp(0.0f, 1.0f, 0.0f);
   glm::vec3 cartPosition(0.0f, terrain.content[terrain.height / 2][terrain.width / 2], 0.0f);
-  glm::vec3 cameraOffset(0.0f, 10.0f, 15.0f);
+  glm::vec3 cameraOffset(0.0f, 4.0f, 6.0f);
   auto movementSpeed = 15.0f;
   auto wheelTurnSpeed = 5.0f;
   auto maxWheelTurn = 45.0f;
-  camera.pitch = -45.0f;
+  camera.pitch = -15.0f;
   camera.updateVectors();
 
   Shader terrainProgram("resources/shaders/terrain.vert", "resources/shaders/terrain.frag");
