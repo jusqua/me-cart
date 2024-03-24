@@ -136,12 +136,14 @@ void Engine::init(void) {
     cartProgram.setUniform("material.shininess", cartBodyworkMaterial.shininess);
 
     model = glm::translate(glm::mat4(1.0f), cartPosition);
-    model = glm::translate(model, cartScaleFactor * glm::vec3(0.0f, 4.0f, 0.0f));
-    model = glm::scale(model, cartScaleFactor * glm::vec3(8.0f, 2.0f, 20.0f));
+    model = glm::rotate(model, glm::degrees(cartYaw), cartUp);
+    model = glm::translate(model, cartScaleFactor * glm::vec3(0.0f, 4.0f, 5.0f));
+    model = glm::scale(model, cartScaleFactor * glm::vec3(8.0f, 2.0f, 10.0f));
     cartProgram.setUniform("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     model = glm::translate(glm::mat4(1.0f), cartPosition);
+    model = glm::rotate(model, glm::degrees(cartYaw), cartUp);
     model = glm::translate(model, cartScaleFactor * glm::vec3(0.0f, 6.0f, 0.0f));
     model = glm::scale(model, cartScaleFactor * glm::vec3(8.0f, 6.0f, 6.0f));
     cartProgram.setUniform("model", model);
@@ -154,11 +156,12 @@ void Engine::init(void) {
     cartProgram.setUniform("material.shininess", cartWheelMaterial.shininess);
 
     model = glm::translate(glm::mat4(1.0f), cartPosition);
-    model = glm::translate(model, cartScaleFactor * glm::vec3(0.0f, 3.0f, 0.0f));
+    model = glm::rotate(model, glm::degrees(cartYaw), cartUp);
+    model = glm::translate(model, cartScaleFactor * glm::vec3(0.0f, 3.0f, 4.0f));
     for (int i = -1; i < 2; i += 2) {
       auto modelX = glm::translate(model, cartScaleFactor * glm::vec3(i * 4.0f, 0.0f, 0.0f));
       for (int k = -1; k < 2; k += 2) {
-        auto modelXZ = glm::translate(modelX, cartScaleFactor * glm::vec3(0.0f, 0.0f, k * 8.0f));
+        auto modelXZ = glm::translate(modelX, cartScaleFactor * glm::vec3(0.0f, 0.0f, k * 4.0f));
         auto _model = glm::scale(modelXZ, cartScaleFactor * glm::vec3(0.5f, 2.0f, 2.0f));
         cartProgram.setUniform("model", _model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
