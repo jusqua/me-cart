@@ -129,53 +129,37 @@ void Engine::init(void) {
     cartProgram.setUniform("view", view);
     cartProgram.setUniform("projection", projection);
 
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, cartPosition);
-    model = glm::translate(model, glm::vec3(-4.0f * cartScaleFactor, 0.0f, -4.0f * cartScaleFactor));
-
-    // Cart base
+    // Cart bodywork
     cartProgram.setUniform("material.ambient", cartBodyworkMaterial.ambient);
     cartProgram.setUniform("material.diffuse", cartBodyworkMaterial.diffuse);
     cartProgram.setUniform("material.specular", cartBodyworkMaterial.specular);
     cartProgram.setUniform("material.shininess", cartBodyworkMaterial.shininess);
 
-    for (int j = 0; j < 3; j++) {
-      auto modelY = glm::translate(model, glm::vec3(0.0f, j * cartScaleFactor, 0.0f));
-      for (int i = 0; i < 8; i++) {
-        auto modelYX = glm::translate(modelY, glm::vec3(i * cartScaleFactor, 0.0f, 0.0f));
-        for (int k = 0; k < 16; k++) {
-          auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * cartScaleFactor));
-          auto _model = glm::scale(modelYXZ, glm::vec3(cartScaleFactor));
-          cartProgram.setUniform("model", _model);
-          glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-      }
-    }
+    model = glm::translate(glm::mat4(1.0f), cartPosition);
+    model = glm::translate(model, cartScaleFactor * glm::vec3(0.0f, 4.0f, 0.0f));
+    model = glm::scale(model, cartScaleFactor * glm::vec3(8.0f, 2.0f, 20.0f));
+    cartProgram.setUniform("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    for (int j = 3; j < 6; j++) {
-      auto modelY = glm::translate(model, glm::vec3(0.0f, j * cartScaleFactor, 0.0f));
-      for (int i = 0; i < 8; i++) {
-        auto modelYX = glm::translate(modelY, glm::vec3(i * cartScaleFactor, 0.0f, 0.0f));
-        for (int k = 0; k < 6; k++) {
-          auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * cartScaleFactor));
-          auto _model = glm::scale(modelYXZ, glm::vec3(cartScaleFactor));
-          cartProgram.setUniform("model", _model);
-          glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-      }
-    }
+    model = glm::translate(glm::mat4(1.0f), cartPosition);
+    model = glm::translate(model, cartScaleFactor * glm::vec3(0.0f, 6.0f, 0.0f));
+    model = glm::scale(model, cartScaleFactor * glm::vec3(8.0f, 6.0f, 6.0f));
+    cartProgram.setUniform("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     // Cart wheels
     cartProgram.setUniform("material.ambient", cartWheelMaterial.ambient);
     cartProgram.setUniform("material.diffuse", cartWheelMaterial.diffuse);
     cartProgram.setUniform("material.specular", cartWheelMaterial.specular);
     cartProgram.setUniform("material.shininess", cartWheelMaterial.shininess);
-    auto modelY = glm::translate(model, glm::vec3(-cartScaleFactor / 2.0f, -cartScaleFactor / 2.0f, cartScaleFactor * 3));
-    for (int i = 0; i < 2; i++) {
-      auto modelYX = glm::translate(modelY, glm::vec3(i * cartScaleFactor * 8, 0.0f, 0.0f));
-      for (int k = 0; k < 2; k++) {
-        auto modelYXZ = glm::translate(modelYX, glm::vec3(0.0f, 0.0f, k * cartScaleFactor * 10));
-        auto _model = glm::scale(modelYXZ, glm::vec3(cartScaleFactor / 2.0f, cartScaleFactor * 2.0f, cartScaleFactor * 2.0f));
+
+    model = glm::translate(glm::mat4(1.0f), cartPosition);
+    model = glm::translate(model, cartScaleFactor * glm::vec3(0.0f, 3.0f, 0.0f));
+    for (int i = -1; i < 2; i += 2) {
+      auto modelX = glm::translate(model, cartScaleFactor * glm::vec3(i * 4.0f, 0.0f, 0.0f));
+      for (int k = -1; k < 2; k += 2) {
+        auto modelXZ = glm::translate(modelX, cartScaleFactor * glm::vec3(0.0f, 0.0f, k * 8.0f));
+        auto _model = glm::scale(modelXZ, cartScaleFactor * glm::vec3(0.5f, 2.0f, 2.0f));
         cartProgram.setUniform("model", _model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
       }
