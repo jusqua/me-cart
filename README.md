@@ -26,14 +26,16 @@ sudo apt install libstdc++-12-dev libglew-dev libglfw3-dev libglm-dev libstb-dev
 
 ### Running
 
-There are available 4 types of terrain in PGM located at `resources/terrain/` that you can choose, or input your own PGM file.
+There are available 4 types of terrain in PGM are located at `resources/terrain/` that you can choose, or input your own PGM file.
+There are available 2 types of terrain texture images are located at `resources/textures/` that you can choose, or input your own image file.
 
 You need to build first with `make` that returns a binary `me-cart`:
 ```
 make
-./me-cart [terrain file path]
+./me-cart [terrain structure path] [terrain texture path]
 ```
 
+If no files are specified the defaults are selected: `plains.pgm` and `limestone.jpg`.
 
 ## Actions
 

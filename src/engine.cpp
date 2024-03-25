@@ -2,8 +2,9 @@
 #include <glm/common.hpp>
 
 // Engine constructor
-Engine::Engine(pgm_t terrain) {
-  this->terrain = terrain;
+Engine::Engine(const char *terrainPath, const char *terrainTexturePath) {
+  this->terrain = importPGM(terrainPath);
+  this->terrainTexture = importTexture(terrainTexturePath);
 
   this->window.setFramebufferSizeCallback(Engine::framebufferSizeCallback);
 }
@@ -17,7 +18,6 @@ void Engine::init(void) {
   terrainVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 8 * sizeof(float), 0);
   terrainVAO.linkAttrib(objectVBO, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
   terrainVAO.linkAttrib(objectVBO, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-  auto terrainTexture = importTexture(DEFAULT_TERRAIN_TEXTURE);
   material_t terrainMaterial = {glm::vec3(1.0f, 0.5f, 0.31f),
                                 glm::vec3(1.0f, 0.5f, 0.31f),
                                 glm::vec3(0.5f, 0.5f, 0.5f),

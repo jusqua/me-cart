@@ -10,7 +10,7 @@
 
 class Engine {
  public:
-  Engine(pgm_t terrain);
+  Engine(const char *terrainPath, const char *terrainTexturePath);
 
   void init();
   void framebufferSizeCallback(int width, int height);
@@ -24,6 +24,7 @@ class Engine {
   Window window;
   Camera camera;
   pgm_t terrain;
+  unsigned int terrainTexture;
   float deltaTime;
   float lastTime;
   double lastX;
