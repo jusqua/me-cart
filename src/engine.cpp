@@ -44,7 +44,8 @@ void Engine::init(void) {
                                   glm::vec3(0.5f),
                                   0.25f};
 
-  float cartWheelAngle = 0.0f;
+  float cartWheelYaw = 0.0f;
+  float cartWheelPitch = 0.0f;
   float cartYaw = 0.0f;
   glm::vec3 cartFront(1.0f, 0.0f, 0.0f);
   glm::vec3 cartUp(0.0f, 1.0f, 0.0f);
@@ -175,11 +176,12 @@ void Engine::init(void) {
     model = glm::rotate(model, -glm::radians(cartYaw), cartUp);
     model = glm::translate(model, cartScaleFactor * glm::vec3(-4.0f, 3.0f, 0.0f));
     for (int i = -1; i < 2; i += 2) {
-      auto modelX = glm::translate(model, cartScaleFactor * glm::vec3(i * -4.0f, 0.0f, 0.0f));
+      auto modelX = glm::translate(model, cartScaleFactor * glm::vec3(i * -4.5f, 0.0f, 0.0f));
       for (int k = -1; k < 2; k += 2) {
-        auto modelXZ = glm::translate(modelX, cartScaleFactor * glm::vec3(0.0f, 0.0f, k * 4.0f));
+        auto modelXZ = glm::translate(modelX, cartScaleFactor * glm::vec3(0.0f, 0.0f, k * 4.5f));
         if (i < 0)
-          modelXZ = glm::rotate(modelXZ, -glm::degrees(cartWheelAngle), cartUp);
+          modelXZ = glm::rotate(modelXZ, -glm::degrees(cartWheelYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+        modelXZ = glm::rotate(modelXZ, -glm::degrees(cartWheelPitch), glm::vec3(0.0f, 0.0f, 1.0f));
         auto _model = glm::scale(modelXZ, cartScaleFactor * glm::vec3(-2.0f, 2.0f, 0.5f));
         cartProgram.setUniform("model", _model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -197,10 +199,10 @@ void Engine::init(void) {
     auto APressed = window.getKeyBehavior(GLFW_KEY_A, GLFW_PRESS);
     auto DPressed = window.getKeyBehavior(GLFW_KEY_D, GLFW_PRESS);
 
-    cartWheelAngle = (APressed * -maxWheelTurn) + (DPressed * maxWheelTurn);
+    cartWheelYaw = (APressed * -maxWheelTurn) + (DPressed * maxWheelTurn);
     auto cartDirection = WPressed * 1.0f + SPressed * -1.0f;
 
-    cartYaw += cartDirection * radialSpeed * cartWheelAngle / maxWheelTurn;
+    cartYaw += cartDirection * radialSpeed * cartWheelYaw / maxWheelTurn;
 
     if (cartYaw > 360.0)
       cartYaw -= 360.0;
@@ -215,6 +217,7 @@ void Engine::init(void) {
     if (cartTerrainX >= 0 && cartTerrainX < terrain.height && cartTerrainZ >= 0 && cartTerrainZ < terrain.width) {
       cartPosition = cartNextPosition;
       cartPosition.y = terrain.content[cartTerrainX][cartTerrainZ];
+      cartWheelPitch += cartDirection;
     }
 
     model = glm::rotate(glm::mat4(1.0f), -glm::radians(cartYaw), cartUp);
