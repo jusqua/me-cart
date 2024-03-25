@@ -88,9 +88,11 @@ pgm_t importPGM(const char *path) {
     throw std::runtime_error(ERROR_PREFIX + "File does not match PGM format");
   }
 
-  // Ignore file description
-  std::getline(ssource, line);
-  std::istringstream(line) >> pgm.description;
+  // Get file description if exists
+  if (source.find("#", 0) != SIZE_MAX) {
+    std::getline(ssource, line);
+    std::istringstream(line) >> pgm.description;
+  }
 
   // Get content dimensions
   std::getline(ssource, line);
