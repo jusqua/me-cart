@@ -180,8 +180,8 @@ void Engine::init(void) {
       for (int k = -1; k < 2; k += 2) {
         auto modelXZ = glm::translate(modelX, cartScaleFactor * glm::vec3(0.0f, 0.0f, k * 4.5f));
         if (i < 0)
-          modelXZ = glm::rotate(modelXZ, -glm::degrees(cartWheelYaw), glm::vec3(0.0f, 1.0f, 0.0f));
-        modelXZ = glm::rotate(modelXZ, -glm::degrees(cartWheelPitch), glm::vec3(0.0f, 0.0f, 1.0f));
+          modelXZ = glm::rotate(modelXZ, -glm::radians(cartWheelYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+        modelXZ = glm::rotate(modelXZ, -glm::radians(cartWheelPitch), glm::vec3(0.0f, 0.0f, 1.0f));
         auto _model = glm::scale(modelXZ, cartScaleFactor * glm::vec3(-2.0f, 2.0f, 0.5f));
         cartProgram.setUniform("model", _model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -217,7 +217,7 @@ void Engine::init(void) {
     if (cartTerrainX >= 0 && cartTerrainX < terrain.height && cartTerrainZ >= 0 && cartTerrainZ < terrain.width) {
       cartPosition = cartNextPosition;
       cartPosition.y = terrain.content[cartTerrainX][cartTerrainZ];
-      cartWheelPitch += cartDirection;
+      cartWheelPitch += cartDirection * 100;
     }
 
     model = glm::rotate(glm::mat4(1.0f), -glm::radians(cartYaw), cartUp);
