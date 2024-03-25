@@ -198,12 +198,9 @@ void Engine::init(void) {
     auto DPressed = window.getKeyBehavior(GLFW_KEY_D, GLFW_PRESS);
 
     cartWheelAngle = (APressed * -maxWheelTurn) + (DPressed * maxWheelTurn);
-    auto cartRotationDirection = radialSpeed * cartWheelAngle / maxWheelTurn;
+    auto cartDirection = WPressed * 1.0f + SPressed * -1.0f;
 
-    if (WPressed)
-      cartYaw += radialSpeed * cartWheelAngle / maxWheelTurn;
-    if (SPressed)
-      cartYaw -= radialSpeed * cartWheelAngle / maxWheelTurn;
+    cartYaw += cartDirection * radialSpeed * cartWheelAngle / maxWheelTurn;
 
     if (cartYaw > 360.0)
       cartYaw -= 360.0;
@@ -212,15 +209,13 @@ void Engine::init(void) {
 
     cartFront = glm::normalize(glm::vec3(cos(glm::radians(cartYaw)), 0.0f, sin(glm::radians(cartYaw))));
 
-    if (WPressed)
-      cartPosition += cartFront * velocity;
-    if (SPressed)
-      cartPosition -= cartFront * velocity;
-
-    auto cartTerrainX = (int)cartPosition.x + terrain.height / 2;
-    auto cartTerrainZ = (int)cartPosition.z + terrain.width / 2;
-    if (cartTerrainX >= 0 && cartTerrainX < terrain.height && cartTerrainZ >= 0 && cartTerrainZ < terrain.width)
+    auto cartNextPosition = cartPosition + cartDirection * cartFront * velocity;
+    auto cartTerrainX = (int)cartNextPosition.x + terrain.height / 2;
+    auto cartTerrainZ = (int)cartNextPosition.z + terrain.width / 2;
+    if (cartTerrainX >= 0 && cartTerrainX < terrain.height && cartTerrainZ >= 0 && cartTerrainZ < terrain.width) {
+      cartPosition = cartNextPosition;
       cartPosition.y = terrain.content[cartTerrainX][cartTerrainZ];
+    }
 
     model = glm::rotate(glm::mat4(1.0f), -glm::radians(cartYaw), cartUp);
     model = glm::translate(model, cartPosition);
