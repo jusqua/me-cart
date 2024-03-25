@@ -2,8 +2,8 @@
 #define MECART_UTILS_HPP
 
 #include <GL/glew.h>
-#include <string>
 #include <glm/glm.hpp>
+#include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -12,6 +12,7 @@
 
 const static std::string ERROR_PREFIX = "ERROR: ";
 const static std::string USAGE_PREFIX = "USAGE: ";
+const static char *DEFAULT_TERRAIN_TEXTURE = "resources/textures/limestone.jpg";
 const static char *DEFAULT_TERRAIN_PATH = "resources/terrain/plains.pgm";
 
 extern const float BLOCK_VERTICES[];
@@ -41,5 +42,6 @@ typedef struct {
 std::string importSource(const char *path);
 pgm_t importPGM(const char *path);
 unsigned int importShader(const char *path, GLenum type);
+unsigned int importTexture(char const *path);
 
 #endif  // !MECART_UTILS_HPP
