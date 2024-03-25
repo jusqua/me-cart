@@ -221,7 +221,9 @@ void Engine::init(void) {
     auto cartNextPosition = cartPosition + cartDirection * cartFront * velocity;
     auto cartTerrainX = (int)cartNextPosition.x + terrain.height / 2;
     auto cartTerrainZ = (int)cartNextPosition.z + terrain.width / 2;
-    if (cartTerrainX >= 0 && cartTerrainX < terrain.height && cartTerrainZ >= 0 && cartTerrainZ < terrain.width) {
+    if ((cartTerrainX >= 0 && cartTerrainX < terrain.height) &&
+        (cartTerrainZ >= 0 && cartTerrainZ < terrain.width) &&
+        (terrain.content[cartTerrainX][cartTerrainZ] - cartPosition.y < 2)) {
       cartPosition = cartNextPosition;
       cartPosition.y = terrain.content[cartTerrainX][cartTerrainZ];
       cartWheelPitch += cartDirection * 100;
