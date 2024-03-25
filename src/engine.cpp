@@ -208,8 +208,11 @@ void Engine::init(void) {
     if (cartTerrainX >= 0 && cartTerrainX < terrain.height && cartTerrainZ >= 0 && cartTerrainZ < terrain.width)
       cartPosition.y = terrain.content[cartTerrainX][cartTerrainZ];
 
-    // camera.yaw = cartYaw;
-    // camera.updateVectors();
+    model = glm::rotate(glm::mat4(1.0f), -glm::radians(cartYaw), cartUp);
+    model = glm::translate(model, cartPosition);
+    cameraOffset = glm::vec3(model * glm::vec4(-6.0f, 4.0f, 0.0f, 0.0f));
+    camera.yaw = cartYaw;
+    camera.updateVectors();
   }
 }
 
