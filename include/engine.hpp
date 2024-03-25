@@ -14,21 +14,10 @@ class Engine {
 
   void init();
   void framebufferSizeCallback(int width, int height);
-  void cursorPosCallback(double xpos, double ypos);
-  void scrollCallback(double xoffset, double yoffset);
-  void processKeyboardEvents(void);
 
   static void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
     auto engine = (Engine *)glfwGetWindowUserPointer(window);
     engine->framebufferSizeCallback(width, height);
-  }
-  static void cursorPosCallback(GLFWwindow *window, double xpos, double ypos) {
-    auto engine = (Engine *)glfwGetWindowUserPointer(window);
-    engine->cursorPosCallback(xpos, ypos);
-  }
-  static void scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
-    auto engine = (Engine *)glfwGetWindowUserPointer(window);
-    engine->scrollCallback(xoffset, yoffset);
   }
 
  private:
