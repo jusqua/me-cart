@@ -184,8 +184,13 @@ void Engine::init(void) {
     auto DPressed = window.getKeyBehavior(GLFW_KEY_D, GLFW_PRESS);
 
     cartWheelAngle = (APressed * -maxWheelTurn) + (DPressed * maxWheelTurn);
+    auto cartRotationDirection = radialSpeed * cartWheelAngle / maxWheelTurn;
 
-    cartYaw += radialSpeed * cartWheelAngle / maxWheelTurn;
+    if (WPressed)
+      cartYaw += radialSpeed * cartWheelAngle / maxWheelTurn;
+    if (SPressed)
+      cartYaw -= radialSpeed * cartWheelAngle / maxWheelTurn;
+
     if (cartYaw > 360.0)
       cartYaw -= 360.0;
     if (cartYaw < 0.0)
