@@ -12,7 +12,7 @@
 
 const static std::string ERROR_PREFIX = "ERROR: ";
 const static std::string USAGE_PREFIX = "USAGE: ";
-const static char *DEFAULT_TERRAIN_PATH = "resources/terrain/default.pgm";
+const static char *DEFAULT_TERRAIN_PATH = "resources/terrain/plains.pgm";
 
 extern const float BLOCK_VERTICES[];
 extern const GLsizeiptr BLOCK_VERTICES_SIZE;
