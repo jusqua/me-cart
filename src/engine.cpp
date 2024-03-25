@@ -14,8 +14,10 @@ void Engine::init(void) {
 
   // INFO: Terrain object
   auto terrainVAO = VAO();
-  terrainVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), 0);
-  terrainVAO.linkAttrib(objectVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+  terrainVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 8 * sizeof(float), 0);
+  terrainVAO.linkAttrib(objectVBO, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+  terrainVAO.linkAttrib(objectVBO, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+  auto terrainTexture = importTexture(DEFAULT_TERRAIN_TEXTURE);
   material_t terrainMaterial = {glm::vec3(1.0f, 0.5f, 0.31f),
                                 glm::vec3(1.0f, 0.5f, 0.31f),
                                 glm::vec3(0.5f, 0.5f, 0.5f),
@@ -23,7 +25,7 @@ void Engine::init(void) {
 
   // INFO: Light object
   auto lightVAO = VAO();
-  lightVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), 0);
+  lightVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 8 * sizeof(float), 0);
   directional_light_t light = {glm::vec3(0.5f),
                                glm::vec3(0.8f),
                                glm::vec3(1.0f),
@@ -31,8 +33,8 @@ void Engine::init(void) {
 
   // INFO: Cart object
   auto cartVAO = VAO();
-  cartVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), 0);
-  cartVAO.linkAttrib(objectVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+  cartVAO.linkAttrib(objectVBO, 0, 3, GL_FLOAT, 8 * sizeof(float), 0);
+  cartVAO.linkAttrib(objectVBO, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
   auto cartScaleFactor = 0.25f;
   material_t cartBodyworkMaterial = {glm::vec3(0.0f),
                                      glm::vec3(0.1f, 0.35f, 0.1f),
@@ -92,10 +94,11 @@ void Engine::init(void) {
     terrainProgram.setUniform("light.specular", light.specular);
     terrainProgram.setUniform("light.direction", light.direction);
 
-    terrainProgram.setUniform("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-    terrainProgram.setUniform("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
     terrainProgram.setUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
     terrainProgram.setUniform("material.shininess", 32.0f);
+    cartProgram.setUniform("material.diffuse", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, terrainTexture);
 
     terrainProgram.setUniform("view", view);
     terrainProgram.setUniform("projection", projection);
