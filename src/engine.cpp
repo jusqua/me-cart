@@ -208,7 +208,7 @@ void Engine::init(void) {
     auto cartDirection = WPressed * 1.0f + SPressed * -1.0f;
 
     // Change cart yaw rotation axis
-    cartYaw += cartDirection * cartWheelYaw / maxWheelTurn;
+    cartYaw += cartDirection * cartWheelYaw / maxWheelTurn * 2.0f;
     if (cartYaw > 360.0)
       cartYaw -= 360.0;
     if (cartYaw < 0.0)
