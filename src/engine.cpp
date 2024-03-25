@@ -74,8 +74,8 @@ void Engine::init(void) {
     auto view = this->camera.getView();
     auto projection = glm::perspective(glm::radians(camera.fov),
                                        (float)this->window.width / this->window.height,
-                                       0.2f,
-                                       800.0f);
+                                       0.1f,
+                                       80.0f);
 
     // Terrain Logic
     terrainProgram.activate();
