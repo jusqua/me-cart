@@ -52,8 +52,8 @@ void Engine::init(void) {
   glm::vec3 cartPosition(0.0f, terrain.content[terrain.height / 2][terrain.width / 2], 0.0f);
   glm::vec3 cameraOffset(-6.0f, 4.0f, 0.0f);
   auto movementSpeed = 15.0f;
-  auto radialSpeed = 5.0f;
-  auto maxWheelTurn = 30.0f;
+  auto wheelTurnSpeed = 1.5f;
+  auto maxWheelTurn = 45.0f;
   camera.yaw = cartYaw;
   camera.pitch = -15.0f;
   camera.updateVectors();
@@ -199,10 +199,10 @@ void Engine::init(void) {
     auto APressed = window.getKeyBehavior(GLFW_KEY_A, GLFW_PRESS);
     auto DPressed = window.getKeyBehavior(GLFW_KEY_D, GLFW_PRESS);
 
-    cartWheelYaw = (APressed * -maxWheelTurn) + (DPressed * maxWheelTurn);
+    cartWheelYaw = glm::clamp(cartWheelYaw + (APressed * -wheelTurnSpeed) + (DPressed * wheelTurnSpeed), -maxWheelTurn, maxWheelTurn);
     auto cartDirection = WPressed * 1.0f + SPressed * -1.0f;
 
-    cartYaw += cartDirection * radialSpeed * cartWheelYaw / maxWheelTurn;
+    cartYaw += cartDirection * cartWheelYaw / maxWheelTurn;
 
     if (cartYaw > 360.0)
       cartYaw -= 360.0;
