@@ -15,13 +15,13 @@ This project in made in C++ with OpenGL, some tools and libraries are needed to 
 #### Fedora
 
 ```
-sudo dnf install glew-devel glfw-devel glm-devel stb-devel clang make
+sudo dnf install glew-devel glfw-devel glm-devel clang make
 ```
 
 #### Debian/Ubuntu
 
 ```
-sudo apt install libstdc++-12-dev libglew-dev libglfw3-dev libglm-dev libstb-dev clang make
+sudo apt install libstdc++-12-dev libglew-dev libglfw3-dev libglm-dev clang make
 ```
 
 ### Running
