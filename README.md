@@ -49,6 +49,12 @@ Use `Mouse` to move around, it's implements a fly-like camera:
 | D          | Turn right              |
 | Escape     | Quit                    |
 
+## Screenshots
+
+![Mountains terrain with Limestone texture](resources/screenshots/mountains-limestone.png)
+
+![Plateaus terrain with Stone texture](resources/screenshots/plateaus-stone.png)
+
 ## Textures Attributions
 
 - `limestone.jpg` and `stone.jpg` by [kues1](https://www.freepik.com/free-photo/warm-limestone-texture_1035015.htm#query=stone%20texture&position=4&from_view=keyword&track=ais&uuid=ca5c40da-0b37-4d3b-a069-1f3b6a5be6a3) on Freepik
