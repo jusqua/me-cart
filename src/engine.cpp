@@ -95,15 +95,29 @@ void Engine::init(void) {
     terrainProgram.setUniform("view", view);
     terrainProgram.setUniform("projection", projection);
 
-    auto start = glm::translate(glm::mat4(1.0f), glm::vec3(-this->terrain.height / 2.0f, 0.0f, -this->terrain.width / 2.0f));
+    auto start = glm::translate(glm::mat4(1.0f), -glm::vec3(this->terrain.height / 2.0f, 0.0f, this->terrain.width / 2.0f));
     for (int i = 0; i < this->terrain.height; i++) {
       auto right = glm::translate(start, glm::vec3((float)i, 0.0f, 0.0f));
 
       for (int j = 0; j < this->terrain.width; j++) {
+        int minHeight = terrain.max;
+        if (i + 1 < terrain.height)
+          minHeight = std::min(minHeight, terrain.content[i + 1][j]);
+        if (i - 1 >= 0)
+          minHeight = std::min(minHeight, terrain.content[i - 1][j]);
+        if (j + 1 < terrain.width)
+          minHeight = std::min(minHeight, terrain.content[i][j + 1]);
+        if (j - 1 >= 0)
+          minHeight = std::min(minHeight, terrain.content[i][j - 1]);
+
+        auto delta = terrain.content[i][j] - minHeight;
         auto model = glm::translate(right, glm::vec3(0.0f, (float)this->terrain.content[i][j], (float)j));
 
-        terrainProgram.setUniform("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (int k = delta; k >= 0; k--) {
+          terrainProgram.setUniform("model", model);
+          glDrawArrays(GL_TRIANGLES, 0, 36);
+          model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+        }
       }
     }
 
